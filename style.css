@@ -226,6 +226,8 @@ button{font-family:inherit}
   border:1px solid rgba(255,255,255,.2);
 }
 .map .leaflet-control-attribution{font-size:10px}
+/* scurisce solo le tessere della mappa, non i punti */
+.map .leaflet-tile-pane{filter:invert(1) hue-rotate(200deg) saturate(.7) brightness(.85) contrast(.95)}
 .pinbox{display:grid;place-items:center}
 .pin{
   width:20px;

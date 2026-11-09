@@ -93,9 +93,9 @@
     if (!window.L || !mapEl) return;
     if (!map) {
       map = window.L.map(mapEl, { center: [45.4384, 10.9916], zoom: 13, zoomControl: true });
-      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
     }
     var pts = [];
