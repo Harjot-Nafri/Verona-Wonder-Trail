@@ -163,20 +163,43 @@
     sedi.forEach(function (s) {
       if (filtra && s.categoria !== tab) return;
       var on = !!unlocked[s.id];
+      var c = contenuti[s.id] || {};
       var li = document.createElement('li');
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = on ? 'on' : '';
+      b.className = 'card' + (on ? ' on' : '');
       if (selected === s.id) b.setAttribute('aria-current', 'true');
-      var dot = document.createElement('span');
-      dot.className = 'dot2';
-      dot.setAttribute('aria-hidden', 'true');
-      var name = document.createElement('span');
-      name.textContent = s.nome;
-      var tag = document.createElement('span');
-      tag.className = 'tag';
-      tag.textContent = on ? 'Sbloccata' : 'Bloccata';
-      b.appendChild(dot); b.appendChild(name); b.appendChild(tag);
+      b.setAttribute('aria-label', s.nome + (on ? ', sbloccata' : ', bloccata'));
+
+      var ph = document.createElement('span');
+      ph.className = 'ph';
+      if (s.immagine) {
+        var img = document.createElement('img');
+        img.src = s.immagine;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        ph.appendChild(img);
+      }
+      if (!on) {
+        var lock = document.createElement('span');
+        lock.className = 'lock';
+        lock.setAttribute('aria-hidden', 'true');
+        lock.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>';
+        ph.appendChild(lock);
+      }
+
+      var txt = document.createElement('span');
+      txt.className = 'txt2';
+      var t1 = document.createElement('span');
+      t1.className = 'sp';
+      t1.textContent = on ? (c.specie || 'Sbloccata') : 'Da scoprire';
+      var t2 = document.createElement('span');
+      t2.className = 'sd';
+      t2.textContent = s.nome;
+      txt.appendChild(t1); txt.appendChild(t2);
+
+      b.appendChild(ph); b.appendChild(txt);
       b.addEventListener('click', function () { showSede(s.id, true); });
       li.appendChild(b);
       listEl.appendChild(li);
@@ -207,6 +230,14 @@
     if (on) {
       spState.textContent = 'Sede sbloccata';
       var c = contenuti[id] || {};
+      if (s.immagine) {
+        var pimg = document.createElement('img');
+        pimg.className = 'pimg';
+        pimg.src = s.immagine;
+        pimg.alt = c.specie || '';
+        spBody.appendChild(pimg);
+      }
+      if (c.specie) addBlock('Nel tuo album', c.specie);
       addBlock('Storia', c.storia || 'Presto qui troverai la storia di questa sede.');
       addBlock('Lo sapevi?', c.fun_fact || 'Presto qui troverai un fun fact.');
     } else {
@@ -227,10 +258,12 @@
   }
 
   async function loadSedi() {
-    var s = await sb.from('sedi').select('id,nome,ordine,lat,lng,categoria').order('ordine');
+    var s = await sb.from('sedi').select('id,nome,ordine,lat,lng,categoria,immagine').order('ordine');
+    if (s.error) s = await sb.from('sedi').select('id,nome,ordine,lat,lng,categoria').order('ordine');
     if (s.error) s = await sb.from('sedi').select('id,nome,ordine,lat,lng').order('ordine');
     var b = await sb.from('sblocchi').select('sede_id');
-    var c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact');
+    var c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact,specie');
+    if (c.error) c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact');
     if (s.error || !s.data) return;
     sedi = s.data;
     unlocked = {};
