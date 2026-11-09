@@ -256,6 +256,28 @@ button{font-family:inherit}
 .panel p.txt{margin:0;font-size:16px;line-height:1.55}
 .panel.locked{background:transparent;border:1px dashed rgba(255,255,255,.5)}
 
+.tabs{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+}
+.tabs[hidden]{display:none}
+.tabs button{
+  min-height:44px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:var(--white);
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.tabs button[aria-selected="true"]{background:var(--acid);color:var(--midnight)}
+.tabs button:focus-visible{outline:3px solid var(--white);outline-offset:2px}
 .sedi-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
 .sedi-list button{
   width:100%;

@@ -13,6 +13,8 @@
   var spState = document.getElementById('sp-state');
   var spBody = document.getElementById('sp-body');
   var listEl = document.getElementById('sedi-list');
+  var tabsEl = document.getElementById('tabs');
+  var tab = 'flora';
 
   function say(text) { if (note) note.textContent = text; }
 
@@ -122,10 +124,44 @@
     setTimeout(function () { map.invalidateSize(); }, 200);
   }
 
+  function hasCategories() {
+    return sedi.some(function (s) { return !!s.categoria; });
+  }
+
+  function drawTabs() {
+    if (!tabsEl) return;
+    tabsEl.hidden = !hasCategories();
+    ['flora', 'fauna'].forEach(function (cat) {
+      var b = document.getElementById('tab-' + cat);
+      if (!b) return;
+      var tot = 0, got = 0;
+      sedi.forEach(function (s) {
+        if (s.categoria === cat) { tot++; if (unlocked[s.id]) got++; }
+      });
+      b.textContent = (cat === 'flora' ? 'Flora' : 'Fauna') + ' · ' + got + '/' + tot;
+      b.setAttribute('aria-selected', tab === cat ? 'true' : 'false');
+    });
+  }
+
+  function setTab(cat) {
+    tab = cat;
+    drawTabs();
+    drawList();
+  }
+
+  if (tabsEl) {
+    ['flora', 'fauna'].forEach(function (cat) {
+      var b = document.getElementById('tab-' + cat);
+      if (b) b.addEventListener('click', function () { setTab(cat); });
+    });
+  }
+
   function drawList() {
     if (!listEl) return;
     listEl.textContent = '';
+    var filtra = hasCategories();
     sedi.forEach(function (s) {
+      if (filtra && s.categoria !== tab) return;
       var on = !!unlocked[s.id];
       var li = document.createElement('li');
       var b = document.createElement('button');
@@ -163,6 +199,7 @@
     if (!s || !panel) return;
     var prev = selected;
     selected = id;
+    if (s.categoria && s.categoria !== tab) { tab = s.categoria; drawTabs(); }
     var on = !!unlocked[id];
     spNome.textContent = s.nome;
     spBody.textContent = '';
@@ -190,7 +227,8 @@
   }
 
   async function loadSedi() {
-    var s = await sb.from('sedi').select('id,nome,ordine,lat,lng').order('ordine');
+    var s = await sb.from('sedi').select('id,nome,ordine,lat,lng,categoria').order('ordine');
+    if (s.error) s = await sb.from('sedi').select('id,nome,ordine,lat,lng').order('ordine');
     var b = await sb.from('sblocchi').select('sede_id');
     var c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact');
     if (s.error || !s.data) return;
@@ -201,6 +239,7 @@
     (c.data || []).forEach(function (r) { contenuti[r.sede_id] = r; });
     updateProgress();
     drawMap();
+    drawTabs();
     drawList();
     if (selected) showSede(selected, false);
   }
