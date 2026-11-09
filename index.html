@@ -16,7 +16,7 @@
 
 <header class="top">
 <span class="brand">Wonder Trail</span>
-<span class="lang">IT</span>
+<span class="lang" id="who">IT</span>
 </header>
 
 <section class="hero">
@@ -44,10 +44,18 @@
 <p class="lead">Ogni punto è una sede. Quelle gialle le hai già sbloccate.</p>
 <button class="cta" id="cta" type="button">Scansiona un QR</button>
 <p class="note" id="note" role="status"></p>
+<form class="nick" id="nick-form" hidden>
+<label class="sr" for="nick">Nickname</label>
+<input id="nick" name="nick" type="text" minlength="2" maxlength="20" required autocomplete="off" placeholder="Scegli un nickname">
+<button type="submit">Conferma</button>
+</form>
+<p class="progress" id="progress"></p>
 
 </section>
 
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script src="app.js" defer></script>
 </body>
 </html>

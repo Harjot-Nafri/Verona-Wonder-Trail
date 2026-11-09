@@ -154,6 +154,37 @@ button{font-family:inherit}
   text-align:center;
 }
 
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nick{display:flex;gap:8px;width:min(350px,100%)}
+.nick[hidden]{display:none}
+.nick input{
+  flex:1;
+  min-width:0;
+  height:48px;
+  padding:0 16px;
+  border:1px solid rgba(255,255,255,.4);
+  border-radius:999px;
+  background:transparent;
+  color:var(--white);
+  font:inherit;
+  font-size:16px;
+}
+.nick input::placeholder{color:rgba(255,255,255,.7)}
+.nick input:focus-visible{outline:3px solid var(--acid);outline-offset:2px}
+.nick button{
+  height:48px;
+  padding:0 18px;
+  border:0;
+  border-radius:999px;
+  background:var(--ocean);
+  color:var(--white);
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.nick button:focus-visible{outline:3px solid var(--white);outline-offset:2px}
+.progress{margin:0;font-size:14px;font-weight:600;color:var(--acid);text-align:center}
+
 @keyframes rise{from{transform:translateY(115%)}to{transform:translateY(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes grow{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
