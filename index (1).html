@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#01047B">
+<title>Verona Wonder Trail</title>
+<meta name="description" content="Scansiona i QR nelle sedi dell'Università di Verona, sblocca la loro storia e scrivi agli altri poli.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@1,500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="screen">
+
+<header class="top">
+<span class="brand">Wonder Trail</span>
+<span class="lang" id="who">IT</span>
+</header>
+
+<section class="hero">
+
+<div class="stage" aria-hidden="true">
+<div class="ring r1"></div>
+<div class="orbit o1"><span class="dot on" style="--a:0deg"></span><span class="dot off" style="--a:180deg"></span></div>
+<div class="ring r2"></div>
+<div class="orbit o2"><span class="dot off" style="--a:0deg"></span><span class="dot on" style="--a:270deg"></span><span class="dot off" style="--a:90deg"></span></div>
+<div class="ring r3"></div>
+<div class="orbit o3"><span class="dot off" style="--a:0deg"></span><span class="dot on" style="--a:180deg"></span></div>
+<div class="pulse"></div>
+<div class="core">
+<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h-3zM20 14v1M14 20h1M20 18v3h-3"></path></svg>
+</div>
+</div>
+
+<h1 class="title">
+<span class="letters" aria-label="Esplora">
+<span aria-hidden="true" style="--i:0">E</span><span aria-hidden="true" style="--i:1">S</span><span aria-hidden="true" style="--i:2">P</span><span aria-hidden="true" style="--i:3">L</span><span aria-hidden="true" style="--i:4">O</span><span aria-hidden="true" style="--i:5">R</span><span aria-hidden="true" style="--i:6">A</span>
+</span>
+<span class="script"><span>intorno a te</span></span>
+</h1>
+
+<p class="lead">Ogni punto è una sede. Quelle gialle le hai già sbloccate.</p>
+<button class="cta" id="cta" type="button">Scansiona un QR</button>
+<p class="note" id="note" role="status"></p>
+<form class="nick" id="nick-form" hidden>
+<label class="sr" for="nick">Nickname</label>
+<input id="nick" name="nick" type="text" minlength="2" maxlength="20" required autocomplete="off" placeholder="Scegli un nickname">
+<button type="submit">Conferma</button>
+</form>
+<p class="progress" id="progress"></p>
+
+</section>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>
