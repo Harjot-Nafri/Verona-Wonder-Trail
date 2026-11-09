@@ -192,6 +192,97 @@ button{font-family:inherit}
 @keyframes spinBack{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}
 @keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.4);opacity:0}}
 
+
+/* link secondario */
+.ghost{
+  color:var(--white);
+  font-size:15px;
+  font-weight:500;
+  text-decoration:underline;
+  text-underline-offset:4px;
+  padding:6px 10px;
+  animation:fadeUp .7s ease-out 1.9s both;
+}
+.ghost:focus-visible{outline:3px solid var(--acid);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+/* mappa */
+.mapsec{max-width:480px;margin:0 auto;padding:28px 20px 48px}
+.mapsec h2{
+  margin:0;
+  font-family:'Anton',sans-serif;
+  font-weight:400;
+  font-size:40px;
+  line-height:1.1;
+  text-transform:uppercase;
+}
+.mapsub{margin:6px 0 16px;font-size:15px;color:rgba(255,255,255,.88)}
+.map{
+  height:min(62svh,420px);
+  min-height:300px;
+  border-radius:20px;
+  overflow:hidden;
+  background:#0a0d5e;
+  border:1px solid rgba(255,255,255,.2);
+}
+.map .leaflet-control-attribution{font-size:10px}
+.pinbox{display:grid;place-items:center}
+.pin{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  border:3px solid var(--white);
+  background:var(--midnight);
+  transition:transform .2s var(--ease);
+}
+.pin.on{background:var(--acid);border-color:var(--acid)}
+.pin.sel{transform:scale(1.35);box-shadow:0 0 0 4px rgba(222,244,52,.35)}
+.leaflet-marker-icon:focus-visible .pin{outline:3px solid var(--white);outline-offset:3px}
+
+.panel{
+  margin-top:16px;
+  padding:20px;
+  border-radius:20px;
+  background:var(--ocean);
+  scroll-margin-top:16px;
+}
+.panel[hidden]{display:none}
+.panel:focus{outline:none}
+.panel h3{margin:0;font-size:22px;font-weight:600;line-height:1.2}
+.sp-state{margin:8px 0 0;font-size:14px;font-weight:600}
+.panel h4{margin:16px 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.panel p.txt{margin:0;font-size:16px;line-height:1.55}
+.panel.locked{background:transparent;border:1px dashed rgba(255,255,255,.5)}
+
+.sedi-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+.sedi-list button{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  min-height:52px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:16px;
+  background:transparent;
+  color:var(--white);
+  font-size:16px;
+  text-align:left;
+  cursor:pointer;
+}
+.sedi-list button:focus-visible{outline:3px solid var(--acid);outline-offset:2px}
+.sedi-list button[aria-current="true"]{border-color:var(--acid)}
+.sedi-list .dot2{
+  flex:none;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  border:2px solid var(--white);
+}
+.sedi-list .on .dot2{background:var(--acid);border-color:var(--acid)}
+.sedi-list .tag{margin-left:auto;font-size:13px;color:rgba(255,255,255,.8)}
+.sedi-list .on .tag{color:var(--acid);font-weight:600}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }

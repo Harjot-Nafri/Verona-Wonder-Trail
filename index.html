@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@1,500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -43,6 +44,7 @@
 
 <p class="lead">Ogni punto è una sede. Quelle gialle le hai già sbloccate.</p>
 <button class="cta" id="cta" type="button">Scansiona un QR</button>
+<a class="ghost" href="#mappa">Vedi la mappa</a>
 <p class="note" id="note" role="status"></p>
 <form class="nick" id="nick-form" hidden>
 <label class="sr" for="nick">Nickname</label>
@@ -54,6 +56,20 @@
 </section>
 
 </main>
+
+<section class="mapsec" id="mappa" aria-labelledby="mappa-t">
+<h2 id="mappa-t">Le sedi</h2>
+<p class="mapsub">Tocca un punto. Quelli gialli li hai sbloccati.</p>
+<div id="map" class="map" role="region" aria-label="Mappa delle sedi"></div>
+<div id="sede-panel" class="panel" hidden tabindex="-1">
+<h3 id="sp-nome"></h3>
+<p class="sp-state" id="sp-state"></p>
+<div id="sp-body"></div>
+</div>
+<ul class="sedi-list" id="sedi-list"></ul>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="app.js" defer></script>
