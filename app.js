@@ -15,14 +15,13 @@
   var listEl = document.getElementById('sedi-list');
   var tabsEl = document.getElementById('tabs');
   var tab = 'flora';
+  var scanEl = document.getElementById('scan');
+  var video = document.getElementById('scan-video');
+  var canvas = document.getElementById('scan-canvas');
+  var scanMsg = document.getElementById('scan-msg');
+  var scanClose = document.getElementById('scan-close');
 
   function say(text) { if (note) note.textContent = text; }
-
-  if (cta) {
-    cta.addEventListener('click', function () {
-      say('Inquadra il QR che trovi in sede con la fotocamera del telefono.');
-    });
-  }
 
   if (!window.supabase || !cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_KEY) {
     say('Il collegamento al server non è disponibile in questo momento.');
@@ -50,12 +49,7 @@
     return true;
   }
 
-  async function unlockFromUrl() {
-    var params = new URLSearchParams(window.location.search);
-    var sede = params.get('sede');
-    var key = params.get('k');
-    if (!sede || !key) return null;
-    window.history.replaceState({}, '', window.location.pathname);
+  async function unlockWith(sede, key) {
     var res = await sb.rpc('sblocca_sede', { p_sede: sede, p_chiave: key });
     if (res.error || !res.data || !res.data.ok) {
       say('Questo QR non è valido. Riprova a inquadrarlo.');
@@ -66,6 +60,115 @@
     say('Sede sbloccata: ' + nome);
     return sede;
   }
+
+  async function unlockFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var sede = params.get('sede');
+    var key = params.get('k');
+    if (!sede || !key) return null;
+    window.history.replaceState({}, '', window.location.pathname);
+    return unlockWith(sede, key);
+  }
+
+  // ---- scanner QR con la fotocamera ----
+  var stream = null;
+  var scanning = false;
+  var busy = false;
+  var lastTick = 0;
+  var FALLBACK = 'Puoi anche inquadrare il QR con la fotocamera del telefono.';
+
+  function stopScan() {
+    scanning = false;
+    if (stream) {
+      stream.getTracks().forEach(function (t) { t.stop(); });
+      stream = null;
+    }
+    if (video) video.srcObject = null;
+    if (scanEl) scanEl.hidden = true;
+    document.body.style.overflow = '';
+    if (cta) cta.focus();
+  }
+
+  async function startScan() {
+    if (!session) { say('Un attimo, sto preparando il tuo accesso. Riprova.'); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.jsQR) {
+      say('Non riesco ad aprire la fotocamera da qui. ' + FALLBACK);
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+    } catch (err) {
+      if (err && err.name === 'NotAllowedError') {
+        say('Per scansionare serve il permesso alla fotocamera. ' + FALLBACK);
+      } else {
+        say('Non riesco ad aprire la fotocamera. ' + FALLBACK);
+      }
+      return;
+    }
+    video.srcObject = stream;
+    try { await video.play(); } catch (e) { /* alcuni browser partono da soli */ }
+    scanMsg.textContent = 'Inquadra il QR della sede';
+    scanEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    scanning = true;
+    busy = false;
+    scanClose.focus();
+    window.requestAnimationFrame(tick);
+  }
+
+  function tick(ts) {
+    if (!scanning) return;
+    if (!busy && ts - lastTick >= 120 && video.readyState >= 2 && video.videoWidth) {
+      lastTick = ts;
+      var w = Math.min(video.videoWidth, 640);
+      var h = Math.round(video.videoHeight * w / video.videoWidth);
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(video, 0, 0, w, h);
+      var img = ctx.getImageData(0, 0, w, h);
+      var code = window.jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) handleCode(code.data);
+    }
+    window.requestAnimationFrame(tick);
+  }
+
+  async function handleCode(text) {
+    busy = true;
+    var sede = null, key = null;
+    try {
+      var u = new URL(text);
+      sede = u.searchParams.get('sede');
+      key = u.searchParams.get('k');
+    } catch (e) { /* non è un link */ }
+    if (!sede || !key) {
+      scanMsg.textContent = 'Questo QR non è di Wonder Trail.';
+      setTimeout(function () { busy = false; }, 1500);
+      return;
+    }
+    scanMsg.textContent = 'Controllo il QR…';
+    var ok = await unlockWith(sede, key);
+    if (ok) {
+      stopScan();
+      await loadSedi();
+      showSede(ok, false);
+      var sec = document.getElementById('mappa');
+      if (sec) sec.scrollIntoView();
+    } else {
+      scanMsg.textContent = 'Questo QR non è valido. Riprova.';
+      setTimeout(function () { busy = false; }, 1500);
+    }
+  }
+
+  if (cta) cta.addEventListener('click', startScan);
+  if (scanClose) scanClose.addEventListener('click', stopScan);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && scanning) stopScan();
+  });
+  window.addEventListener('pagehide', function () { if (scanning) stopScan(); });
 
   async function loadProfile() {
     var res = await sb.from('profili').select('nickname').eq('user_id', session.user.id).maybeSingle();
