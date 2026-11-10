@@ -156,8 +156,7 @@
       stopScan();
       await loadSedi();
       showSede(ok, false);
-      var sec = document.getElementById('mappa');
-      if (sec) sec.scrollIntoView();
+      if (window.WT_VIEW) window.WT_VIEW('mappa');
     } else {
       scanMsg.textContent = 'Questo QR non è valido. Riprova.';
       setTimeout(function () { busy = false; }, 1500);
@@ -413,8 +412,7 @@
       await loadSedi();
       if (fresh) {
         showSede(fresh, false);
-        var sec = document.getElementById('mappa');
-        if (sec) sec.scrollIntoView();
+        if (window.WT_VIEW) window.WT_VIEW('mappa');
       }
     } catch (err) {
       say('Qualcosa non ha funzionato. Riprova tra poco.');

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-view="top">
 <main class="screen" id="top">
 
 <header class="top">
@@ -85,6 +85,34 @@
 <a href="#gioca">Gioca</a>
 </nav>
 
+<script>
+(function () {
+  var IDS = ['top', 'mappa', 'gioca'];
+  var links = document.querySelectorAll('.dock a');
+  function show(id) {
+    if (IDS.indexOf(id) < 0) id = 'top';
+    document.body.setAttribute('data-view', id);
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].getAttribute('href') === '#' + id) links[i].setAttribute('aria-current', 'page');
+      else links[i].removeAttribute('aria-current');
+    }
+    window.scrollTo(0, 0);
+    if (id === 'mappa') setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
+  }
+  window.WT_VIEW = show;
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (IDS.indexOf(id) < 0) return;
+    e.preventDefault();
+    show(id);
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
+  });
+  window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+  show(location.hash.slice(1));
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <div class="scan" id="scan" hidden role="dialog" aria-modal="true" aria-label="Scansiona il QR di una sede">
 <video id="scan-video" playsinline muted></video>

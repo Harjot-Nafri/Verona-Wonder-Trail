@@ -401,6 +401,12 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
 }
 .dock a:focus-visible{outline:3px solid var(--acid);outline-offset:-3px}
 
+/* una sola schermata alla volta */
+body[data-view="mappa"] .screen,body[data-view="gioca"] .screen,
+body[data-view="top"] .mapsec,body[data-view="gioca"] .mapsec,
+body[data-view="top"] .gioca,body[data-view="mappa"] .gioca{display:none}
+.dock a[aria-current="page"]{color:var(--acid);box-shadow:inset 0 3px 0 var(--acid)}
+
 /* sezione Gioca */
 .gioca{max-width:480px;margin:0 auto;padding:12px 20px 48px;scroll-margin-top:8px}
 .gioca h2{
