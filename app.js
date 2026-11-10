@@ -30,6 +30,7 @@
 
   var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
   var session = null;
+  window.WT = { sb: sb, ready: false };
 
   // stato della mappa
   var map = null;
@@ -405,6 +406,8 @@
         say('Non riesco ad accedere. Riprova tra poco.');
         return;
       }
+      window.WT.ready = true;
+      document.dispatchEvent(new Event('wt:ready'));
       var fresh = await unlockFromUrl();
       await loadProfile();
       await loadSedi();

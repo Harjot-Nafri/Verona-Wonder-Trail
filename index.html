@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="screen">
+<main class="screen" id="top">
 
 <header class="top">
 <span class="brand">Wonder Trail</span>
@@ -73,6 +73,18 @@
 <ul class="sedi-list" id="sedi-list"></ul>
 </section>
 
+<section class="gioca" id="gioca" aria-labelledby="gioca-t">
+<h2 id="gioca-t">Gioca</h2>
+<p class="mapsub">Un quiz al giorno e una sfida con la raccolta differenziata.</p>
+<div id="gioca-view"></div>
+</section>
+
+<nav class="dock" aria-label="Sezioni del sito">
+<a href="#top">Home</a>
+<a href="#mappa">Sedi</a>
+<a href="#gioca">Gioca</a>
+</nav>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <div class="scan" id="scan" hidden role="dialog" aria-modal="true" aria-label="Scansiona il QR di una sede">
 <video id="scan-video" playsinline muted></video>
@@ -86,5 +98,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="app.js" defer></script>
+<script src="rifiuti.js" defer></script>
+<script src="gioca.js" defer></script>
 </body>
 </html>
