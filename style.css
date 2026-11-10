@@ -4,7 +4,8 @@
   --acid:#FD8F32;
   --soft:#FFB36B;
   --lav:#C9A8FF;
-  --mesh:radial-gradient(75% 46% at 8% 6%,rgba(112,34,252,.9),transparent 70%),radial-gradient(70% 44% at 102% 100%,rgba(253,143,50,.78),transparent 70%),radial-gradient(50% 30% at 100% 0%,rgba(112,34,252,.5),transparent 70%);
+  --px:0%;--py:0%;
+  --mesh:radial-gradient(75% 46% at calc(8% + var(--px)) calc(6% + var(--py)),rgba(112,34,252,.9),transparent 70%),radial-gradient(70% 44% at calc(102% - var(--px)) calc(100% - var(--py)),rgba(253,143,50,.78),transparent 70%),radial-gradient(50% 30% at 100% 0%,rgba(112,34,252,.5),transparent 70%);
   --white:#ffffff;
   --ease:cubic-bezier(.2,.8,.2,1);
 }
@@ -856,3 +857,6 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .title .script span{font-size:clamp(40px,13vw,54px);line-height:1}
 .title{gap:0}
 .cta{background:linear-gradient(90deg,var(--ocean),var(--acid));color:#fff;box-shadow:0 8px 30px rgba(253,143,50,.35)}
+
+.spot{position:fixed;left:0;top:0;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .4s;background:radial-gradient(circle,rgba(253,143,50,.55) 0,rgba(112,34,252,.35) 40%,transparent 70%);filter:blur(10px);mix-blend-mode:screen;will-change:transform}
+.screen{position:relative;z-index:1}
