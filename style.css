@@ -850,7 +850,8 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .halo{position:absolute;inset:0;margin:auto;border-radius:50%;border:1px solid rgba(255,255,255,.18);animation:grow 1s var(--ease) .3s both}
 .halo.h1{width:calc(var(--s)*.82);height:calc(var(--s)*.82)}
 .halo.h2{width:calc(var(--s)*1.04);height:calc(var(--s)*1.04);opacity:.55}
-.aura{position:absolute;left:50%;top:50%;width:calc(var(--s)*.62);height:calc(var(--s)*.62);margin:calc(var(--s)*-.31) 0 0 calc(var(--s)*-.31);filter:drop-shadow(0 0 28px rgba(253,143,50,.55));will-change:transform;animation:grow 1s var(--ease) .1s both}
+.aura{position:absolute;left:50%;top:50%;width:calc(var(--s)*.62);height:calc(var(--s)*.62);margin:calc(var(--s)*-.31) 0 0 calc(var(--s)*-.31);filter:drop-shadow(0 0 28px rgba(253,143,50,.55));will-change:transform;animation:auraIn 1s ease-out .1s both}
+@keyframes auraIn{from{opacity:0}to{opacity:1}}
 .aura-sym{width:100%;height:100%;display:block}
 .stage{--s:min(300px,80vw)}
 .letters span{font-size:clamp(28px,9vw,38px)}
