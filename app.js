@@ -50,7 +50,13 @@
     return true;
   }
 
+  var lastNew = null;
+
   async function unlockWith(sede, key) {
+    lastNew = null;
+    var pre = null;
+    try { pre = await sb.from('sblocchi').select('sede_id').eq('sede_id', sede); } catch (e) { pre = null; }
+    var wasNew = !!(pre && !pre.error && pre.data && pre.data.length === 0);
     var res = await sb.rpc('sblocca_sede', { p_sede: sede, p_chiave: key });
     if (res.error || !res.data || !res.data.ok) {
       say('Questo QR non è valido. Riprova a inquadrarlo.');
@@ -59,7 +65,17 @@
     var info = await sb.from('sedi').select('nome').eq('id', sede).maybeSingle();
     var nome = info.data && info.data.nome ? info.data.nome : 'nuova sede';
     say('Sede sbloccata: ' + nome);
+    if (wasNew) lastNew = nome;
     return sede;
+  }
+
+  async function celebrate() {
+    if (!lastNew || !window.WT_UNLOCK) return;
+    var nome = lastNew;
+    lastNew = null;
+    try {
+      await window.WT_UNLOCK({ nome: nome, n: Object.keys(unlocked).length, total: sedi.length, punti: 20 });
+    } catch (e) { /* l'animazione non deve bloccare lo sblocco */ }
   }
 
   async function unlockFromUrl() {
@@ -155,6 +171,7 @@
     if (ok) {
       stopScan();
       await loadSedi();
+      await celebrate();
       showSede(ok, false);
       if (window.WT_VIEW) window.WT_VIEW('mappa');
     } else {
@@ -411,6 +428,7 @@
       await loadProfile();
       await loadSedi();
       if (fresh) {
+        await celebrate();
         showSede(fresh, false);
         if (window.WT_VIEW) window.WT_VIEW('mappa');
       }
