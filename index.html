@@ -25,27 +25,19 @@
 
 <section class="hero">
 
-<div class="stage" aria-hidden="true">
-<div class="ring r1"></div>
-<div class="orbit o1"><span class="dot on" style="--a:0deg"></span><span class="dot off" style="--a:180deg"></span></div>
-<div class="ring r2"></div>
-<div class="orbit o2"><span class="dot off" style="--a:0deg"></span><span class="dot on" style="--a:270deg"></span><span class="dot off" style="--a:90deg"></span></div>
-<div class="ring r3"></div>
-<div class="orbit o3"><span class="dot off" style="--a:0deg"></span><span class="dot on" style="--a:180deg"></span></div>
-<div class="pulse"></div>
-<div class="core">
-<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h-3zM20 14v1M14 20h1M20 18v3h-3"></path></svg>
-</div>
+<div class="stage" aria-hidden="true" id="stage">
+<div class="halo h1"></div>
+<div class="halo h2"></div>
+<div class="aura" id="aura"><svg class="aura-sym" viewBox="0 0 100 100" aria-hidden="true"><g stroke="#FD8F32" stroke-width="9" stroke-linecap="round"><line x1="50" y1="50" x2="50" y2="22" transform="rotate(0 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(0 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(51.42857142857143 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(51.42857142857143 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(102.85714285714286 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(102.85714285714286 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(154.28571428571428 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(154.28571428571428 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(205.71428571428572 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(205.71428571428572 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(257.14285714285717 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(257.14285714285717 50 50)"/><line x1="50" y1="50" x2="50" y2="22" transform="rotate(308.57142857142856 50 50)"/><circle cx="50" cy="9" r="8" stroke="none" fill="#FD8F32" transform="rotate(308.57142857142856 50 50)"/></g></svg></div>
 </div>
 
 <h1 class="title">
-<span class="letters" aria-label="Esplora">
-<span aria-hidden="true" style="--i:0">E</span><span aria-hidden="true" style="--i:1">S</span><span aria-hidden="true" style="--i:2">P</span><span aria-hidden="true" style="--i:3">L</span><span aria-hidden="true" style="--i:4">O</span><span aria-hidden="true" style="--i:5">R</span><span aria-hidden="true" style="--i:6">A</span>
-</span>
-<span class="script"><span>intorno a te</span></span>
+<span class="letters" aria-label="Scansiona."><span aria-hidden="true" style="--i:0">S</span><span aria-hidden="true" style="--i:1">C</span><span aria-hidden="true" style="--i:2">A</span><span aria-hidden="true" style="--i:3">N</span><span aria-hidden="true" style="--i:4">S</span><span aria-hidden="true" style="--i:5">I</span><span aria-hidden="true" style="--i:6">O</span><span aria-hidden="true" style="--i:7">N</span><span aria-hidden="true" style="--i:8">A</span><span aria-hidden="true" style="--i:9">.</span></span>
+<span class="letters" aria-label="Scopri."><span aria-hidden="true" style="--i:10">S</span><span aria-hidden="true" style="--i:11">C</span><span aria-hidden="true" style="--i:12">O</span><span aria-hidden="true" style="--i:13">P</span><span aria-hidden="true" style="--i:14">R</span><span aria-hidden="true" style="--i:15">I</span><span aria-hidden="true" style="--i:16">.</span></span>
+<span class="script"><span>scrivi.</span></span>
 </h1>
 
-<p class="lead">Ogni punto è una sede. Quelle gialle le hai già sbloccate.</p>
+<p class="lead">Trova i QR nelle 14 sedi, sblocca la loro storia e lascia una parola per chi arriva dopo di te.</p>
 <button class="cta" id="cta" type="button">Scansiona un QR</button>
 <a class="ghost" href="#mappa">Vedi la mappa</a>
 <p class="note" id="note" role="status"></p>
@@ -149,5 +141,21 @@
 <script src="carte.js" defer></script>
 <script src="parole.js" defer></script>
 <script src="io.js" defer></script>
+<script>
+(function(){
+var a=document.getElementById('aura'),st=document.getElementById('stage');
+if(!a||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
+var tx=0,ty=0,x=0,y=0,spin=0,sv=0;
+function set(cx,cy){tx=Math.max(-1,Math.min(1,(cx/innerWidth-.5)*2));ty=Math.max(-1,Math.min(1,(cy/innerHeight-.5)*2))}
+addEventListener('pointermove',function(e){set(e.clientX,e.clientY)},{passive:true});
+addEventListener('pointerdown',function(e){set(e.clientX,e.clientY)},{passive:true});
+addEventListener('deviceorientation',function(e){if(e.gamma==null)return;tx=Math.max(-1,Math.min(1,e.gamma/30));ty=Math.max(-1,Math.min(1,((e.beta||45)-45)/30))},{passive:true});
+st.addEventListener('pointerdown',function(){sv+=14});
+(function f(){x+=(tx-x)*.08;y+=(ty-y)*.08;sv*=.95;spin+=.12+sv;
+a.style.transform='translate('+(x*16)+'px,'+(y*16)+'px) rotate('+(spin+x*10)+'deg)';
+document.documentElement.style.setProperty('--px',(x*60)+'px');document.documentElement.style.setProperty('--py',(y*50)+'px');
+requestAnimationFrame(f)})();
+})();
+</script>
 </body>
 </html>
