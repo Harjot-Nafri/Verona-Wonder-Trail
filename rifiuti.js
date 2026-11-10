@@ -80,17 +80,19 @@
   }
 
   function mount(view, onBack) {
-    var round = [];
-    var idx = 0;
-    var score = 0;
-    var errors = [];
+    var DURATION = 45;
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var raf = 0, running = false, S = null;
+
+    function stop() { running = false; cancelAnimationFrame(raf); }
+    function back() { stop(); onBack(); }
 
     function topBar(label) {
       var bar = el('div', 'qtop');
-      var back = el('button', 'back', '← Giochi');
-      back.type = 'button';
-      back.addEventListener('click', onBack);
-      bar.appendChild(back);
+      var b = el('button', 'back', '← Giochi');
+      b.type = 'button';
+      b.addEventListener('click', back);
+      bar.appendChild(b);
       bar.appendChild(el('span', 'qprog', label));
       return bar;
     }
@@ -107,102 +109,193 @@
       return p;
     }
 
-    function start() {
-      round = pick(ROUND);
-      idx = 0;
-      score = 0;
-      errors = [];
-      step();
-    }
-
-    function step() {
+    function intro() {
+      stop();
       view.textContent = '';
-      var it = round[idx];
       var card = el('div', 'gcard');
-      card.appendChild(topBar('Rifiuto ' + (idx + 1) + ' di ' + round.length));
+      card.appendChild(topBar('Dove lo butto?'));
       var h = el('h3', 'qtext', 'Dove lo butto?');
       h.tabIndex = -1;
       card.appendChild(h);
-      card.appendChild(el('div', 'item', it[0]));
-
-      var list = el('ul', 'bins');
-      var buttons = [];
-      BINS.forEach(function (b) {
-        var li = el('li');
-        var btn = el('button', 'bin');
-        btn.type = 'button';
-        btn.dataset.id = b.id;
-        var name = el('span', 'bn');
-        var dot = el('span', 'bd');
-        dot.style.setProperty('--c', b.c);
-        dot.setAttribute('aria-hidden', 'true');
-        name.appendChild(dot);
-        name.appendChild(document.createTextNode(b.nome));
-        btn.appendChild(name);
-        if (b.sub) btn.appendChild(el('small', null, b.sub));
-        var mk = el('span', 'mk');
-        btn.appendChild(mk);
-        btn.addEventListener('click', function () { answer(b.id, buttons, fb); });
-        li.appendChild(btn);
-        list.appendChild(li);
-        buttons.push(btn);
-      });
-      card.appendChild(list);
-
-      var fb = el('div', 'fb');
-      fb.hidden = true;
-      fb.setAttribute('role', 'status');
-      card.appendChild(fb);
+      card.appendChild(el('p', null, 'Gli oggetti scorrono sul nastro. Tocca il contenitore giusto per quello con il bordo giallo, il più avanti. Hai ' + DURATION + ' secondi: più risposte giuste di fila, più punti.'));
+      var go = el('button', 'gbtn', 'Gioca');
+      go.type = 'button';
+      go.addEventListener('click', start);
+      card.appendChild(go);
       card.appendChild(source());
       view.appendChild(card);
       h.focus({ preventScroll: true });
     }
 
-    function answer(chosen, buttons, fb) {
-      var it = round[idx];
-      var right = it[1];
-      var good = chosen === right;
-      if (good) score++; else errors.push(it);
-      buttons.forEach(function (b) {
-        b.disabled = true;
-        var mk = b.querySelector('.mk');
-        if (b.dataset.id === right) {
-          b.classList.add('ok');
-          mk.textContent = '✓ Giusto';
-        } else if (b.dataset.id === chosen) {
-          b.classList.add('ko');
-          mk.textContent = '✗';
+    function start() {
+      S = { score: 0, right: 0, wrong: 0, combo: 1, streak: 0, time: DURATION, el: 0,
+            items: [], queue: [], spawn: 0, last: performance.now(), errors: [] };
+      view.textContent = '';
+      var card = el('div', 'gcard nb');
+      card.appendChild(topBar('Nastro'));
+
+      var hud = el('div', 'nb-hud');
+      var l = el('div'); l.appendChild(el('small', null, 'Punti'));
+      S.sEl = el('div', 'nb-big', '0'); l.appendChild(S.sEl);
+      S.cEl = el('span', 'nb-combo', '×1');
+      var r = el('div', 'nb-r'); r.appendChild(el('small', null, 'Tempo'));
+      S.tEl = el('div', 'nb-big', String(DURATION)); r.appendChild(S.tEl);
+      hud.appendChild(l); hud.appendChild(S.cEl); hud.appendChild(r);
+      card.appendChild(hud);
+
+      var tb = el('div', 'nb-time');
+      S.tbEl = el('i');
+      tb.appendChild(S.tbEl);
+      card.appendChild(tb);
+
+      S.belt = el('div', 'nb-belt');
+      card.appendChild(S.belt);
+
+      S.now = el('p', 'nb-now', '');
+      S.now.setAttribute('aria-live', 'polite');
+      card.appendChild(S.now);
+
+      S.fb = el('p', 'nb-fb', 'Tocca il contenitore giusto.');
+      S.fb.setAttribute('role', 'status');
+      card.appendChild(S.fb);
+
+      var grid = el('div', 'nb-bins');
+      S.btns = {};
+      BINS.forEach(function (b) {
+        var x = el('button', 'nb-bin');
+        x.type = 'button';
+        x.dataset.id = b.id;
+        x.style.setProperty('--c', b.c);
+        var body = el('span', 'nb-body');
+        body.setAttribute('aria-hidden', 'true');
+        body.appendChild(el('span', 'nb-lid'));
+        x.appendChild(body);
+        x.appendChild(el('span', 'nb-name', b.nome));
+        x.addEventListener('click', function () { choose(b.id, x); });
+        grid.appendChild(x);
+        S.btns[b.id] = x;
+      });
+      card.appendChild(grid);
+      card.appendChild(source());
+      view.appendChild(card);
+
+      running = true;
+      raf = requestAnimationFrame(loop);
+    }
+
+    function front() {
+      var f = null;
+      S.items.forEach(function (i) { if (!f || i.x > f.x) f = i; });
+      return f;
+    }
+    function remove(i) {
+      if (i.n.parentNode) i.n.parentNode.removeChild(i.n);
+      S.items = S.items.filter(function (x) { return x !== i; });
+    }
+    function say(text, cls) {
+      S.fb.textContent = text;
+      S.fb.className = 'nb-fb ' + (cls || '');
+    }
+    function paint() {
+      S.sEl.textContent = S.score;
+      S.cEl.textContent = '×' + S.combo;
+      S.cEl.classList.add('pop');
+      setTimeout(function () { S.cEl.classList.remove('pop'); }, 160);
+    }
+    function mark(btn, cls) {
+      btn.classList.remove('good', 'bad', 'hint');
+      void btn.offsetWidth;
+      btn.classList.add(cls);
+      setTimeout(function () { btn.classList.remove(cls); }, 800);
+    }
+    function remember(it) {
+      for (var k = 0; k < S.errors.length; k++) if (S.errors[k] === it) return;
+      S.errors.push(it);
+    }
+    function lose(it, text) {
+      S.combo = 1; S.streak = 0; S.wrong++;
+      remember(it);
+      paint();
+      say(text, 'ko');
+      if (navigator.vibrate) { try { navigator.vibrate(50); } catch (e) {} }
+    }
+
+    function choose(id, btn) {
+      if (!running) return;
+      var f = front();
+      if (!f) return;
+      if (f.d[1] === id) {
+        S.score += 10 * S.combo;
+        S.streak++; S.right++;
+        S.combo = Math.min(5, 1 + Math.floor(S.streak / 3));
+        mark(btn, 'good');
+        remove(f);
+        paint();
+        say(f.d[2], 'ok');
+      } else {
+        mark(btn, 'bad');
+        mark(S.btns[f.d[1]], 'hint');
+        remove(f);
+        lose(f.d, 'Non proprio: "' + f.d[0] + '" va in ' + binName(f.d[1]) + '. ' + f.d[2]);
+      }
+    }
+
+    function loop(ts) {
+      if (!running) return;
+      if (!S.belt.isConnected) { stop(); return; }
+      var dt = Math.min(0.05, (ts - S.last) / 1000);
+      S.last = ts;
+      S.time -= dt;
+      S.el += dt;
+      var W = S.belt.clientWidth;
+
+      S.spawn -= dt;
+      if (S.spawn <= 0) {
+        if (!S.queue.length) S.queue = pick(ITEMS.length);
+        var it = S.queue.pop();
+        var n = el('div', 'nb-chip', it[0]);
+        S.belt.appendChild(n);
+        S.items.push({ d: it, n: n, x: -n.offsetWidth });
+        S.spawn = (calm ? 1.4 : 1) * Math.max(1.7, 3.0 - S.el * 0.03);
+      }
+      var speed = (calm ? 0.6 : 1) * (62 + S.el * 1.4);
+      S.items.slice().forEach(function (i) {
+        i.x += speed * dt;
+        i.n.style.transform = 'translateX(' + i.x + 'px)';
+        if (i.x > W - i.n.offsetWidth) {
+          remove(i);
+          lose(i.d, 'Troppo lento: "' + i.d[0] + '" va in ' + binName(i.d[1]) + '. ' + i.d[2]);
         }
       });
-      fb.textContent = '';
-      fb.appendChild(el('strong', null, good ? 'Giusto!' : 'Non proprio: va in ' + binName(right) + '.'));
-      fb.appendChild(el('p', null, it[2]));
-      var last = idx === round.length - 1;
-      var next = el('button', 'gbtn', last ? 'Vedi il risultato' : 'Avanti');
-      next.type = 'button';
-      next.addEventListener('click', function () {
-        if (last) result(); else { idx++; step(); }
-      });
-      fb.appendChild(next);
-      fb.hidden = false;
-      next.focus();
+      var f = front();
+      S.items.forEach(function (i) { i.n.classList.toggle('front', i === f); });
+      var label = f ? f.d[0] : '';
+      if (label !== S.nowText) { S.nowText = label; S.now.textContent = label ? 'Ora: ' + label : ''; }
+
+      S.tEl.textContent = Math.max(0, Math.ceil(S.time));
+      S.tbEl.style.width = Math.max(0, S.time / DURATION * 100) + '%';
+      if (S.time <= 0) { result(); return; }
+      raf = requestAnimationFrame(loop);
     }
 
     function result() {
+      stop();
       view.textContent = '';
       var card = el('div', 'gcard');
       card.appendChild(topBar('Risultato'));
-      var h = el('h3', 'qtext', 'Hai fatto ' + score + ' su ' + round.length);
+      var h = el('h3', 'qtext', 'Tempo scaduto!');
       h.tabIndex = -1;
       card.appendChild(h);
-      var msg = score === round.length ? 'Perfetto: sei un esperto di differenziata!'
-        : score >= 7 ? 'Molto bene! Ripassa gli ultimi errori qui sotto.'
-        : 'Buon inizio. Rigioca: ogni giro cambia gli oggetti.';
-      card.appendChild(el('p', 'sub', msg));
-      if (errors.length) {
+      card.appendChild(el('div', 'score', String(S.score)));
+      var tot = S.right + S.wrong;
+      card.appendChild(el('p', 'sub', S.right + ' giusti su ' + tot + '. ' +
+        (S.wrong === 0 && S.right > 0 ? 'Nemmeno un errore: sei un esperto di differenziata!'
+          : S.right >= S.wrong ? 'Bel lavoro. Rigioca: gli oggetti cambiano ogni volta.'
+          : 'Buon inizio. Rigioca: gli oggetti cambiano ogni volta.')));
+      if (S.errors.length) {
         card.appendChild(el('h4', 'sec', 'Da ricordare'));
         var ul = el('ul', 'review');
-        errors.forEach(function (it) {
+        S.errors.forEach(function (it) {
           var li = el('li');
           li.appendChild(el('strong', null, it[0] + ' → ' + binName(it[1])));
           li.appendChild(el('span', null, it[2]));
@@ -219,7 +312,7 @@
       h.focus({ preventScroll: true });
     }
 
-    start();
+    intro();
   }
 
   window.WT_RIFIUTI = { mount: mount, count: ITEMS.length };
