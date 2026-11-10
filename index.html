@@ -79,15 +79,22 @@
 <div id="gioca-view"></div>
 </section>
 
+<section class="parole" id="parole" aria-labelledby="parole-t">
+<h2 id="parole-t">Parole</h2>
+<p class="mapsub">Lascia una nota agli altri poli e ricevine una in cambio.</p>
+<div id="parole-view"></div>
+</section>
+
 <nav class="dock" aria-label="Sezioni del sito">
 <a href="#top">Home</a>
 <a href="#mappa">Sedi</a>
 <a href="#gioca">Gioca</a>
+<a href="#parole">Parole</a>
 </nav>
 
 <script>
 (function () {
-  var IDS = ['top', 'mappa', 'gioca'];
+  var IDS = ['top', 'mappa', 'gioca', 'parole'];
   var links = document.querySelectorAll('.dock a');
   function show(id) {
     if (IDS.indexOf(id) < 0) id = 'top';
@@ -97,6 +104,7 @@
       else links[i].removeAttribute('aria-current');
     }
     window.scrollTo(0, 0);
+    document.dispatchEvent(new CustomEvent('wt:view', { detail: id }));
     if (id === 'mappa') setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
   }
   window.WT_VIEW = show;
@@ -128,5 +136,6 @@
 <script src="app.js" defer></script>
 <script src="rifiuti.js" defer></script>
 <script src="gioca.js" defer></script>
+<script src="parole.js" defer></script>
 </body>
 </html>
