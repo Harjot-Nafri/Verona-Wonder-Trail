@@ -839,3 +839,6 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .brand{display:inline-flex;align-items:center;gap:10px;letter-spacing:0;text-transform:none}
 .brand-sym{height:30px;width:30px;flex:none}
 .brand-txt{width:150px;height:auto;display:block}
+
+.cal li.next .dd{opacity:.55}
+.cal li.today .wd{color:var(--acid);font-weight:700}

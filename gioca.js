@@ -74,13 +74,13 @@
   function calendar() {
     var today = todayStr();
     var ul = el('ul', 'cal');
-    ul.setAttribute('aria-label', 'Ultimi 14 giorni');
-    for (var i = 13; i >= 0; i--) {
-      var ds = addDays(today, -i);
+    ul.setAttribute('aria-label', 'Oggi e i prossimi 13 giorni');
+    for (var i = 0; i < 14; i++) {
+      var ds = addDays(today, i);
       var p = parts(ds);
       var ok = !!state.done[ds];
-      var li = el('li', ds === today ? 'today' : '');
-      li.setAttribute('aria-label', p.day + ' ' + p.month + (ok ? ': quiz completato' : ': quiz non completato'));
+      var li = el('li', ds === today ? 'today' : 'next');
+      li.setAttribute('aria-label', p.day + ' ' + p.month + (ok ? ': quiz completato' : ds === today ? ': quiz di oggi' : ''));
       var wd = el('span', 'wd', p.wd);
       wd.setAttribute('aria-hidden', 'true');
       var dd = el('span', 'dd' + (ok ? ' done' : ''), ok ? '✓' : String(p.day));
