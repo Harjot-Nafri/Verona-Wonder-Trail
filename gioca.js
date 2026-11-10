@@ -100,10 +100,10 @@
     s.setAttribute('aria-hidden', 'true');
     var p1 = document.createElementNS(ns, 'path');
     p1.setAttribute('d', 'M27 2c3 14 20 20 20 38a20 20 0 0 1-40 0c0-8 4-12 8-16 0 6 3 9 6 10-3-12 2-22 6-32z');
-    p1.setAttribute('fill', '#ff9d8a');
+    p1.setAttribute('fill', '#FFB36B');
     var p2 = document.createElementNS(ns, 'path');
     p2.setAttribute('d', 'M27 28c2 8 11 11 11 21a11 11 0 0 1-22 0c0-5 3-7 5-9 0 3 2 5 3 5-2-6 1-11 3-17z');
-    p2.setAttribute('fill', '#DEF434');
+    p2.setAttribute('fill', '#FD8F32');
     s.appendChild(p1);
     s.appendChild(p2);
     return s;
@@ -119,9 +119,9 @@
     box.appendChild(el('div', 'm-lab', n === 1 ? 'giorno di serie' : 'giorni di serie'));
     var week = el('div', 'm-week');
     week.setAttribute('aria-hidden', 'true');
-    for (var i = 6; i >= 0; i--) {
-      var ds = addDays(today, -i);
-      week.appendChild(el('i', state.done[ds] ? 'd' : ds === today ? 't' : ''));
+    var lit = Math.min(n, 7);
+    for (var k = 0; k < 7; k++) {
+      week.appendChild(el('i', k < lit ? 'd' : (k === lit && !state.done[today]) ? 't' : ''));
     }
     box.appendChild(week);
     card.appendChild(box);

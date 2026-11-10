@@ -5,10 +5,10 @@
   var BINS = [
     { id: 'umido', nome: 'Umido', sub: 'Scarti organici', c: '#c58a4a' },
     { id: 'carta', nome: 'Carta e cartone', sub: '', c: '#ffffff' },
-    { id: 'plastica', nome: 'Plastica e lattine', sub: 'Imballaggi', c: '#DEF434' },
-    { id: 'vetro', nome: 'Vetro', sub: 'Bottiglie e barattoli', c: '#5fd6a0' },
+    { id: 'plastica', nome: 'Plastica e lattine', sub: 'Imballaggi', c: '#FD8F32' },
+    { id: 'vetro', nome: 'Vetro', sub: 'Bottiglie e barattoli', c: '#C9A8FF' },
     { id: 'secco', nome: 'Secco non riciclabile', sub: '', c: '#a9afb8' },
-    { id: 'punto', nome: 'Punto di raccolta', sub: 'Ecocentro, farmacia, negozi', c: '#ff9d8a' }
+    { id: 'punto', nome: 'Punto di raccolta', sub: 'Ecocentro, farmacia, negozi', c: '#FFB36B' }
   ];
 
   var ITEMS = [

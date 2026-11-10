@@ -237,7 +237,7 @@
     box.appendChild(el('span', 'bd2'));
     box.appendChild(el('span', 'lid'));
     var conf = el('span', 'conf');
-    ['#DEF434', '#ff9d8a', '#ffffff', '#5fd6a0', '#DEF434'].forEach(function (c, k) {
+    ['#FD8F32', '#FFB36B', '#ffffff', '#C9A8FF', '#FD8F32'].forEach(function (c, k) {
       var i = el('i');
       i.style.setProperty('--x', (k * 26 - 52) + 'px');
       i.style.setProperty('--c', c);
