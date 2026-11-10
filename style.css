@@ -405,12 +405,13 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
 body:not([data-view="top"]) .screen,
 body:not([data-view="mappa"]) .mapsec,
 body:not([data-view="gioca"]) .gioca,
-body:not([data-view="parole"]) .parole{display:none}
+body:not([data-view="parole"]) .parole,
+body:not([data-view="io"]) .io{display:none}
 .dock a[aria-current="page"]{color:var(--acid);box-shadow:inset 0 3px 0 var(--acid)}
 
 /* sezione Gioca */
-.gioca,.parole{max-width:480px;margin:0 auto;padding:12px 20px 48px;scroll-margin-top:8px}
-.gioca h2,.parole h2{
+.gioca,.parole,.io{max-width:480px;margin:0 auto;padding:12px 20px 48px;scroll-margin-top:8px}
+.gioca h2,.parole h2,.io h2{
   margin:0;
   font-family:'Anton',sans-serif;
   font-weight:400;
@@ -632,6 +633,21 @@ body:not([data-view="parole"]) .parole{display:none}
 .pa-link{min-height:44px;padding:0 4px;border:0;background:none;color:rgba(255,255,255,.85);font:inherit;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .pa-confirm{display:flex;align-items:center;gap:6px;font-size:13px}
 .parole .gcard>.sec{margin:0 0 12px}
+
+/* sezione Io */
+.io-kicker{margin:0 0 4px !important;font-size:13px !important;letter-spacing:.12em;text-transform:uppercase}
+.io-nick{margin:0 0 14px !important;font-size:28px !important;overflow-wrap:anywhere}
+.io-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.55)}
+.io-row{display:flex;gap:10px;flex-wrap:wrap}
+.io-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.io-stat{padding:16px 12px;border:1px solid rgba(255,255,255,.25);border-radius:18px;text-align:center}
+.io-num{font-family:'Anton',sans-serif;font-size:36px;line-height:1.1;color:var(--acid);font-variant-numeric:tabular-nums}
+.io-lab{margin-top:4px;font-size:13px;color:rgba(255,255,255,.9)}
+.io-sedi{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.io-sedi li{padding:7px 12px;border:1px solid rgba(255,255,255,.4);border-radius:999px;font-size:13px;color:rgba(255,255,255,.8)}
+.io-sedi li.on{background:var(--acid);border-color:var(--acid);color:var(--midnight);font-weight:600}
+.io-link{display:inline-flex;align-items:center;margin-top:14px;text-decoration:none}
+.io-link:focus-visible{outline:3px solid var(--white);outline-offset:3px}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}

@@ -85,16 +85,23 @@
 <div id="parole-view"></div>
 </section>
 
+<section class="io" id="io" aria-labelledby="io-t">
+<h2 id="io-t">Io</h2>
+<p class="mapsub">Il tuo percorso: sedi, note e cuori.</p>
+<div id="io-view"></div>
+</section>
+
 <nav class="dock" aria-label="Sezioni del sito">
 <a href="#top">Home</a>
 <a href="#mappa">Sedi</a>
 <a href="#gioca">Gioca</a>
 <a href="#parole">Parole</a>
+<a href="#io">Io</a>
 </nav>
 
 <script>
 (function () {
-  var IDS = ['top', 'mappa', 'gioca', 'parole'];
+  var IDS = ['top', 'mappa', 'gioca', 'parole', 'io'];
   var links = document.querySelectorAll('.dock a');
   function show(id) {
     if (IDS.indexOf(id) < 0) id = 'top';
@@ -137,5 +144,6 @@
 <script src="rifiuti.js" defer></script>
 <script src="gioca.js" defer></script>
 <script src="parole.js" defer></script>
+<script src="io.js" defer></script>
 </body>
 </html>
