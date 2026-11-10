@@ -7,7 +7,7 @@
   var MIN = 5;
   var state = { loaded: false, error: null, sedi: [], sbloccate: {}, scritte: [], ricevute: [], inAttesa: 0 };
   var flash = { newId: null, msg: '' };
-  var draft = { sede: '', testo: '', anonima: false };
+  var draft = { sede: '', testo: '', anonima: false, cover: '' };
   var busy = false;
 
   var ERR = {
@@ -68,14 +68,14 @@
   }
 
   // ---- azioni ----
-  async function send(sede, testo, anonima, errEl, btn) {
+  async function send(sede, testo, anonima, cover, errEl, btn) {
     if (busy) return;
     busy = true;
     btn.disabled = true;
     errEl.textContent = '';
     var res;
     try {
-      res = await client().rpc('scrivi_nota', { p_sede: sede, p_testo: testo, p_anonima: anonima });
+      res = await client().rpc('scrivi_nota', { p_sede: sede, p_testo: testo, p_anonima: anonima, p_copertina: cover || null });
     } catch (e) {
       res = { error: e };
     }
@@ -91,7 +91,7 @@
       btn.disabled = false;
       return;
     }
-    draft = { sede: '', testo: '', anonima: false };
+    draft = { sede: '', testo: '', anonima: false, cover: '' };
     flash.newId = d.ricevuta ? d.ricevuta.id : null;
     flash.msg = d.ricevuta
       ? 'Nota inviata. Ecco la nota che hai ricevuto in cambio.'
@@ -125,23 +125,16 @@
     }
   }
 
-  async function toggleHeart(note, btn, countEl) {
-    if (busy) return;
-    var want = btn.getAttribute('aria-pressed') !== 'true';
+  async function toggleHeart(note, want) {
+    if (busy) return null;
     busy = true;
     var res;
     try { res = await client().rpc('metti_like', { p_nota: note.id, p_si: want }); } catch (e) { res = { error: e }; }
     busy = false;
     var d = res && res.data;
-    if (!d || res.error || !d.ok) return;
-    note.mio_like = d.mio_like;
-    note.like = d.like;
-    btn.setAttribute('aria-pressed', d.mio_like ? 'true' : 'false');
-    btn.setAttribute('aria-label', d.mio_like ? 'Togli il cuore' : 'Metti il cuore');
-    countEl.textContent = String(d.like);
-    btn.classList.add('pop');
-    setTimeout(function () { btn.classList.remove('pop'); }, 180);
+    if (!d || res.error || !d.ok) return null;
     if (want && navigator.vibrate) { try { navigator.vibrate(15); } catch (e) {} }
+    return d;
   }
 
   async function report(note) {
@@ -179,6 +172,30 @@
     if (draft.sede && free.some(function (s) { return s.id === draft.sede; })) sel.value = draft.sede;
     card.appendChild(lab);
     card.appendChild(sel);
+
+    var cv = el('fieldset', 'cv');
+    cv.appendChild(el('legend', 'pa-label', 'Scegli la copertina'));
+    var grid = el('div', 'cv-grid');
+    window.WT_CARDS.COVERS.forEach(function (c) {
+      var lb = el('label', 'cv-opt');
+      var rd = el('input');
+      rd.type = 'radio';
+      rd.name = 'pa-cover';
+      rd.value = c[0];
+      rd.checked = draft.cover === c[0];
+      rd.addEventListener('change', function () { draft.cover = c[0]; });
+      var im = el('img');
+      im.src = window.WT_CARDS.coverSrc(c[0]);
+      im.alt = c[1];
+      im.loading = 'lazy';
+      lb.appendChild(rd);
+      lb.appendChild(im);
+      lb.appendChild(el('span', null, c[1]));
+      grid.appendChild(lb);
+    });
+    cv.appendChild(grid);
+    cv.appendChild(el('p', 'pa-hint', 'Se non scegli, la copertina sarà a caso.'));
+    card.appendChild(cv);
 
     var lab2 = el('label', 'pa-label', 'La tua nota');
     lab2.setAttribute('for', 'pa-testo');
@@ -219,7 +236,7 @@
     ta.addEventListener('input', sync);
     cb.addEventListener('change', sync);
     sel.addEventListener('change', sync);
-    btn.addEventListener('click', function () { send(sel.value, ta.value, cb.checked, err, btn); });
+    btn.addEventListener('click', function () { send(sel.value, ta.value, cb.checked, draft.cover, err, btn); });
     sync();
     card.appendChild(btn);
     card.appendChild(err);
@@ -241,22 +258,6 @@
   }
 
   function receivedNote(n) {
-    var li = el('li', 'pa-note' + (n.id === flash.newId ? ' new' : ''));
-    li.appendChild(el('p', 'pa-quote', '«' + n.testo + '»'));
-    var who = n.autore ? '@' + n.autore : 'Anonimo';
-    li.appendChild(el('p', 'pa-meta', who + ' · scritta a ' + n.sede_nome));
-
-    var foot = el('div', 'pa-foot');
-    var heart = el('button', 'pa-heart');
-    heart.type = 'button';
-    heart.setAttribute('aria-pressed', n.mio_like ? 'true' : 'false');
-    heart.setAttribute('aria-label', n.mio_like ? 'Togli il cuore' : 'Metti il cuore');
-    heart.appendChild(heartSvg());
-    var cnt = el('span', null, String(n.like));
-    heart.appendChild(cnt);
-    heart.addEventListener('click', function () { toggleHeart(n, heart, cnt); });
-    foot.appendChild(heart);
-
     var slot = el('div', 'pa-confirm');
     var rep = el('button', 'pa-link', 'Segnala');
     rep.type = 'button';
@@ -274,9 +275,7 @@
       yes.focus();
     });
     slot.appendChild(rep);
-    foot.appendChild(slot);
-    li.appendChild(foot);
-    return li;
+    return window.WT_CARDS.build(n, { isNew: n.id === flash.newId, toggle: toggleHeart, extra: slot });
   }
 
   function receivedCard() {
@@ -286,7 +285,7 @@
       card.appendChild(el('p', null, 'Ancora nessuna. Scrivi la tua nota e ne riceverai una in cambio.'));
       return card;
     }
-    var ul = el('ul', 'pa-list');
+    var ul = el('ul', 'pa-list hc-list');
     state.ricevute.forEach(function (n) { ul.appendChild(receivedNote(n)); });
     card.appendChild(ul);
     return card;
@@ -299,22 +298,13 @@
       card.appendChild(el('p', null, 'Quando scrivi una nota, qui vedi quanti cuori riceve.'));
       return card;
     }
-    var ul = el('ul', 'pa-list');
+    var ul = el('ul', 'pa-list hc-list');
     state.scritte.forEach(function (n) {
-      var li = el('li', 'pa-note' + (n.nascosta ? ' off' : ''));
-      li.appendChild(el('p', 'pa-quote', '«' + n.testo + '»'));
       var st = n.nascosta ? 'Nascosta dalla moderazione'
-        : n.scambiata ? 'Scritta a ' + n.sede_nome
-        : 'Scritta a ' + n.sede_nome + ' · in attesa dello scambio';
-      li.appendChild(el('p', 'pa-meta', st + (n.anonima ? ' · anonima' : '')));
-      var foot = el('div', 'pa-foot');
-      var c = el('span', 'pa-count-only');
-      c.setAttribute('aria-label', n.like + (n.like === 1 ? ' cuore' : ' cuori'));
-      c.appendChild(heartSvg());
-      c.appendChild(el('span', null, String(n.like)));
-      foot.appendChild(c);
-      li.appendChild(foot);
-      ul.appendChild(li);
+        : n.scambiata ? '' : 'In attesa dello scambio';
+      var extra = null;
+      if (st) { extra = el('p', 'pa-meta hc-state', st); }
+      ul.appendChild(window.WT_CARDS.build(n, { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: extra }));
     });
     card.appendChild(ul);
     return card;

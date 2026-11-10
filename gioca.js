@@ -168,7 +168,7 @@
     view.textContent = '';
     var q = state.quiz[i];
     var total = state.quiz.length;
-    var card = el('div', 'gcard');
+    var card = el('div', 'gcard qcard');
     card.appendChild(topBar('Domanda ' + (i + 1) + ' di ' + total));
     card.appendChild(el('span', 'chip', TOPICS[q.argomento] || q.argomento));
     var h = el('h3', 'qtext', q.testo);
@@ -263,7 +263,7 @@
     var total = state.quiz.length;
     var score = state.quiz.filter(function (q) { return q.risposta && q.risposta.corretta; }).length;
     var n = streak(state.done, todayStr());
-    var card = el('div', 'gcard');
+    var card = el('div', 'gcard qcard');
     card.appendChild(topBar('Quiz di oggi'));
     var h = el('h3', 'qtext', 'Quiz completato!');
     h.tabIndex = -1;

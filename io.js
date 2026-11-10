@@ -181,13 +181,8 @@
       card.appendChild(el('p', null, 'Metti il cuore alle note che ti toccano: le ritrovi qui.'));
       return card;
     }
-    var ul = el('ul', 'pa-list');
-    liked.forEach(function (n) {
-      var li = el('li', 'pa-note');
-      li.appendChild(el('p', 'pa-quote', '«' + n.testo + '»'));
-      li.appendChild(el('p', 'pa-meta', (n.autore ? '@' + n.autore : 'Anonimo') + ' · scritta a ' + n.sede_nome));
-      ul.appendChild(li);
-    });
+    var ul = el('ul', 'pa-list hc-list');
+    liked.forEach(function (n) { ul.appendChild(window.WT_CARDS.build(n, {})); });
     card.appendChild(ul);
     return card;
   }
@@ -196,22 +191,12 @@
     var card = el('div', 'gcard');
     card.appendChild(el('h4', 'sec', 'Le tue parole'));
     if (!state.scritte.length) {
-      var p = el('p', null, 'Non hai ancora scritto una nota.');
-      card.appendChild(p);
+      card.appendChild(el('p', null, 'Non hai ancora scritto una nota.'));
     } else {
-      var ul = el('ul', 'pa-list');
+      var ul = el('ul', 'pa-list hc-list');
       state.scritte.forEach(function (n) {
-        var li = el('li', 'pa-note' + (n.nascosta ? ' off' : ''));
-        li.appendChild(el('p', 'pa-quote', '«' + n.testo + '»'));
-        li.appendChild(el('p', 'pa-meta', n.nascosta ? 'Nascosta dalla moderazione' : 'Scritta a ' + n.sede_nome));
-        var foot = el('div', 'pa-foot');
-        var c = el('span', 'pa-count-only');
-        c.setAttribute('aria-label', n.like + (n.like === 1 ? ' cuore' : ' cuori'));
-        c.appendChild(heartSvg());
-        c.appendChild(el('span', null, String(n.like)));
-        foot.appendChild(c);
-        li.appendChild(foot);
-        ul.appendChild(li);
+        var extra = n.nascosta ? el('p', 'pa-meta hc-state', 'Nascosta dalla moderazione') : null;
+        ul.appendChild(window.WT_CARDS.build(n, { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: extra }));
       });
       card.appendChild(ul);
     }
