@@ -1,10 +1,17 @@
-// Sezione "Io": il tuo profilo, i progressi, le tue note e le note che ti sono piaciute.
+// Sezione "Io": profilo, livello, missioni di oggi, forziere, medaglie, passaporto delle sedi e le tue note.
 (function () {
   var view = document.getElementById('io-view');
   if (!view) return;
 
   var NEEDED = 5;
-  var state = { loaded: false, error: null, nick: '', sedi: [], sbloccate: {}, scritte: [], ricevute: [], giorni: {} };
+  var STEP = 250;
+  var LEVELS = ['Curioso', 'Viandante', 'Esploratore', 'Cartografo', 'Guida', 'Custode'];
+  var STOP = { di: 1, del: 1, della: 1, dei: 1, de: 1, la: 1, il: 1, san: 1, e: 1 };
+
+  var state = {
+    loaded: false, error: null, nick: '', sedi: [], sbloccate: {}, scritte: [], ricevute: [],
+    giorni: {}, perfetti: 0, m: null
+  };
   var editing = false;
   var busy = false;
 
@@ -15,16 +22,6 @@
     return n;
   }
   function client() { return window.WT && window.WT.sb; }
-  function heartSvg() {
-    var ns = 'http://www.w3.org/2000/svg';
-    var s = document.createElementNS(ns, 'svg');
-    s.setAttribute('viewBox', '0 0 24 24');
-    s.setAttribute('aria-hidden', 'true');
-    var p = document.createElementNS(ns, 'path');
-    p.setAttribute('d', 'M12 20.5s-7.5-4.6-9.2-9.3C1.7 8 3.6 5 6.6 5c1.9 0 3.5 1 5.4 3 1.9-2 3.5-3 5.4-3 3 0 4.9 3 3.8 6.2-1.7 4.7-9.2 9.3-9.2 9.3z');
-    s.appendChild(p);
-    return s;
-  }
 
   // ---- date (a Verona, come nel quiz) ----
   function todayStr() { return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' }); }
@@ -39,6 +36,21 @@
     while (state.giorni[d]) { n++; d = addDays(d, -1); }
     return n;
   }
+  function bestStreak() {
+    var days = Object.keys(state.giorni).sort();
+    var best = 0, run = 0, prev = null;
+    days.forEach(function (d) {
+      run = prev && addDays(prev, 1) === d ? run + 1 : 1;
+      if (run > best) best = run;
+      prev = d;
+    });
+    return best;
+  }
+  function initials(name) {
+    var w = (name || '').split(/\s+/).filter(function (x) { return x && !STOP[x.toLowerCase()]; });
+    var s = w.slice(0, 2).map(function (x) { return x.charAt(0).toUpperCase(); }).join('');
+    return s || '?';
+  }
 
   // ---- dati ----
   async function load() {
@@ -51,20 +63,29 @@
       var p = uid ? await c.from('profili').select('nickname').eq('user_id', uid).maybeSingle() : null;
       var a = await c.from('sedi').select('id,nome,ordine').order('ordine');
       var b = await c.from('sblocchi').select('sede_id');
-      var r = await c.from('risposte').select('giorno');
+      var r = await c.from('risposte').select('giorno,corretta');
       var n = await c.rpc('mie_note');
+      var mm = await c.rpc('stato_missioni');
       if (a.error || b.error) { state.error = 'err'; state.loaded = true; return; }
       state.nick = (p && p.data && p.data.nickname) || '';
       state.sedi = a.data || [];
       state.sbloccate = {};
       (b.data || []).forEach(function (x) { state.sbloccate[x.sede_id] = true; });
-      var cnt = {};
-      (r.data || []).forEach(function (x) { cnt[x.giorno] = (cnt[x.giorno] || 0) + 1; });
+      var cnt = {}, ok = {};
+      (r.data || []).forEach(function (x) {
+        cnt[x.giorno] = (cnt[x.giorno] || 0) + 1;
+        if (x.corretta) ok[x.giorno] = (ok[x.giorno] || 0) + 1;
+      });
       state.giorni = {};
-      Object.keys(cnt).forEach(function (k) { if (cnt[k] >= NEEDED) state.giorni[k] = true; });
+      state.perfetti = 0;
+      Object.keys(cnt).forEach(function (k) {
+        if (cnt[k] >= NEEDED) state.giorni[k] = true;
+        if (cnt[k] >= NEEDED && ok[k] === cnt[k]) state.perfetti++;
+      });
       var nd = (n && n.data) || {};
       state.scritte = nd.scritte || [];
       state.ricevute = nd.ricevute || [];
+      state.m = (mm && !mm.error && mm.data && mm.data.ok) ? mm.data : null;
       state.error = null;
     } catch (e) {
       state.error = 'err';
@@ -98,17 +119,29 @@
     render();
   }
 
+  function go(id) { if (window.WT_VIEW) window.WT_VIEW(id); }
+
+  // ---- livello ----
+  function levelInfo() {
+    var pts = state.m ? state.m.punti : 0;
+    var lv = Math.floor(pts / STEP) + 1;
+    return { pts: pts, lv: lv, name: LEVELS[Math.min(lv, LEVELS.length) - 1], into: pts % STEP };
+  }
+
   // ---- interfaccia ----
-  function profileCard() {
-    var card = el('div', 'gcard');
-    card.appendChild(el('p', 'io-kicker', 'Il tuo nickname'));
+  function meCard() {
+    var li = levelInfo();
+    var card = el('div', 'me');
+    card.appendChild(el('span', 'av', (state.nick || 'io').slice(0, 2).toUpperCase()));
+    var box = el('div', 'me-text');
     if (!editing) {
-      var h = el('h3', 'io-nick', state.nick ? '@' + state.nick : 'Senza nickname');
-      card.appendChild(h);
-      var b = el('button', 'gbtn io-ghost', state.nick ? 'Cambia nickname' : 'Scegli un nickname');
+      box.appendChild(el('b', null, state.nick ? '@' + state.nick : 'Senza nickname'));
+      if (state.m) box.appendChild(el('span', null, li.name + ' · livello ' + li.lv));
+      var b = el('button', 'me-edit', state.nick ? 'Cambia nickname' : 'Scegli un nickname');
       b.type = 'button';
       b.addEventListener('click', function () { editing = true; render(); var i = document.getElementById('io-nick'); if (i) i.focus(); });
-      card.appendChild(b);
+      box.appendChild(b);
+      card.appendChild(box);
       return card;
     }
     var lab = el('label', 'pa-label', 'Nuovo nickname');
@@ -132,17 +165,135 @@
     inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveNick(inp.value, err, ok); });
     row.appendChild(ok);
     row.appendChild(no);
-    card.appendChild(lab);
-    card.appendChild(inp);
-    card.appendChild(row);
-    card.appendChild(err);
+    box.appendChild(lab);
+    box.appendChild(inp);
+    box.appendChild(row);
+    box.appendChild(err);
+    card.appendChild(box);
     return card;
   }
 
+  function levelCard() {
+    var li = levelInfo();
+    var card = el('div', 'lvl');
+    card.appendChild(el('div', 'hex', String(li.lv)));
+    var box = el('div', 'lvl-text');
+    box.appendChild(el('b', null, li.name));
+    box.appendChild(el('small', null, li.pts + ' punti · ' + (STEP - li.into) + ' al livello ' + (li.lv + 1)));
+    var bar = el('div', 'xpb');
+    bar.setAttribute('role', 'progressbar');
+    bar.setAttribute('aria-valuemin', '0');
+    bar.setAttribute('aria-valuemax', String(STEP));
+    bar.setAttribute('aria-valuenow', String(li.into));
+    var fill = el('i');
+    fill.style.setProperty('--w', Math.round(li.into / STEP * 100) + '%');
+    bar.appendChild(fill);
+    box.appendChild(bar);
+    card.appendChild(box);
+    return card;
+  }
+
+  function quest(sym, title, pts, pct, done, target) {
+    var q = el('button', 'quest' + (done ? ' done' : ''));
+    q.type = 'button';
+    q.appendChild(el('span', 'qi', done ? '✓' : sym));
+    var box = el('div', 'quest-text');
+    var h = el('h4');
+    h.appendChild(el('span', null, title));
+    h.appendChild(el('em', null, '+' + pts));
+    box.appendChild(h);
+    var bar = el('div', 'xpb');
+    var fill = el('i');
+    fill.style.setProperty('--w', Math.round(pct * 100) + '%');
+    bar.appendChild(fill);
+    box.appendChild(bar);
+    q.appendChild(box);
+    q.setAttribute('aria-label', title + (done ? ': completata' : ': da fare'));
+    q.addEventListener('click', function () { go(target); });
+    return q;
+  }
+
+  function questsCard() {
+    var o = state.m.oggi;
+    var wrap = el('div', 'qs-wrap');
+    wrap.appendChild(el('h4', 'sec', 'Missioni di oggi'));
+    var list = el('div', 'qs');
+    list.appendChild(quest('?', 'Quiz del giorno', 50, Math.min(1, o.risposte / NEEDED), !!o.quiz, 'gioca'));
+    list.appendChild(quest('♻', 'Una partita a Dove lo butto?', 30, o.partite > 0 ? 1 : 0, o.partite > 0, 'gioca'));
+    list.appendChild(quest('QR', 'Scansiona una sede (bonus)', 20, o.sede ? 1 : 0, !!o.sede, 'mappa'));
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function chestCard() {
+    var o = state.m.oggi;
+    var ready = o.quiz && o.partite > 0;
+    var opened = !!o.forziere;
+    var wrap = el('div', 'chest-wrap');
+    var chest = el('button', 'chest' + (opened ? ' open' : ready ? ' ready' : ' locked'));
+    chest.type = 'button';
+    var box = el('span', 'box');
+    box.setAttribute('aria-hidden', 'true');
+    box.appendChild(el('span', 'bd2'));
+    box.appendChild(el('span', 'lid'));
+    var conf = el('span', 'conf');
+    ['#DEF434', '#ff9d8a', '#ffffff', '#5fd6a0', '#DEF434'].forEach(function (c, k) {
+      var i = el('i');
+      i.style.setProperty('--x', (k * 26 - 52) + 'px');
+      i.style.setProperty('--c', c);
+      conf.appendChild(i);
+    });
+    box.appendChild(conf);
+    chest.appendChild(box);
+    chest.appendChild(el('strong', null, 'Forziere di oggi'));
+    var txt = el('span', 'chest-txt', opened ? 'Aperto: +' + (o.forziere.punti || 50) + ' punti'
+      : ready ? 'Tocca per aprirlo' : 'Completa il quiz e una partita per aprirlo');
+    chest.appendChild(txt);
+    if (!opened && !ready) chest.setAttribute('aria-disabled', 'true');
+    wrap.appendChild(chest);
+
+    var reveal = el('div', 'reveal');
+    function showFact(f) {
+      reveal.textContent = '';
+      reveal.appendChild(el('span', 'eyebrow', 'Curiosità di oggi'));
+      reveal.appendChild(el('p', null, f.testo));
+      reveal.hidden = false;
+    }
+    reveal.hidden = !opened;
+    if (opened) showFact(o.forziere);
+    wrap.appendChild(reveal);
+    var msg = el('p', 'pa-err');
+    msg.setAttribute('role', 'alert');
+    wrap.appendChild(msg);
+
+    chest.addEventListener('click', async function () {
+      if (opened || busy) return;
+      if (!ready) { msg.textContent = 'Completa prima il quiz e una partita.'; return; }
+      busy = true;
+      msg.textContent = '';
+      var res = null;
+      try { res = await client().rpc('apri_forziere'); } catch (e) { res = null; }
+      busy = false;
+      var d = res && !res.error && res.data;
+      if (!d || !d.ok) {
+        msg.textContent = d && d.errore === 'missioni_incomplete'
+          ? 'Completa prima il quiz e una partita.' : 'Non sono riuscito ad aprire il forziere. Riprova tra poco.';
+        return;
+      }
+      opened = true;
+      chest.classList.remove('ready');
+      chest.classList.add('open', 'fresh');
+      txt.textContent = 'Aperto: +' + (d.punti || 50) + ' punti';
+      showFact(d.curiosita);
+      setTimeout(function () { refresh(); }, 1600);
+    });
+    return wrap;
+  }
+
   function stat(num, label) {
-    var d = el('div', 'io-stat');
-    d.appendChild(el('div', 'io-num', num));
-    d.appendChild(el('div', 'io-lab', label));
+    var d = el('div');
+    d.appendChild(el('b', null, num));
+    d.appendChild(document.createTextNode(label));
     return d;
   }
 
@@ -151,26 +302,83 @@
     var got = state.sedi.filter(function (s) { return state.sbloccate[s.id]; }).length;
     var hearts = state.scritte.reduce(function (a, n) { return a + (n.like || 0); }, 0);
     var n = streak();
-    var grid = el('div', 'io-stats');
-    grid.appendChild(stat(got + '/' + (total || 14), 'Sedi sbloccate'));
-    grid.appendChild(stat(String(state.scritte.length), state.scritte.length === 1 ? 'Nota scritta' : 'Note scritte'));
-    grid.appendChild(stat(String(hearts), hearts === 1 ? 'Cuore ricevuto' : 'Cuori ricevuti'));
-    grid.appendChild(stat(String(n), n === 1 ? 'Giorno di serie' : 'Giorni di serie'));
+    var grid = el('div', 'nums');
+    grid.appendChild(stat(got + '/' + (total || 14), 'sedi'));
+    grid.appendChild(stat(String(state.scritte.length), state.scritte.length === 1 ? 'nota' : 'note'));
+    grid.appendChild(stat(String(hearts), hearts === 1 ? 'cuore' : 'cuori'));
+    grid.appendChild(stat(String(n), n === 1 ? 'giorno di serie' : 'giorni di serie'));
     return grid;
   }
 
-  function sediCard() {
-    var card = el('div', 'gcard');
-    card.appendChild(el('h4', 'sec', 'Le tue sedi'));
-    var ul = el('ul', 'io-sedi');
-    state.sedi.forEach(function (s) {
-      var on = !!state.sbloccate[s.id];
-      var li = el('li', on ? 'on' : '', s.nome);
-      li.setAttribute('aria-label', s.nome + (on ? ': sbloccata' : ': da sbloccare'));
-      ul.appendChild(li);
+  function medals() {
+    var total = state.sedi.length || 14;
+    var got = state.sedi.filter(function (s) { return state.sbloccate[s.id]; }).length;
+    var hearts = state.scritte.reduce(function (a, n) { return a + (n.like || 0); }, 0);
+    var best = bestStreak();
+    var m = state.m || {};
+    return [
+      { n: 'Prima sede', d: 'Sblocca una sede', ok: got >= 1, s: '1' },
+      { n: 'Metà percorso', d: 'Sblocca 7 sedi', ok: got >= 7, s: '7' },
+      { n: 'Tutte le sedi', d: 'Sblocca tutte le sedi', ok: got >= total, s: String(total) },
+      { n: 'Serie di 3', d: 'Completa il quiz 3 giorni di fila', ok: best >= 3, s: '3' },
+      { n: 'Serie di 7', d: 'Completa il quiz 7 giorni di fila', ok: best >= 7, s: '7' },
+      { n: 'Quiz perfetto', d: 'Rispondi giusto a tutte le 5 domande', ok: state.perfetti >= 1, s: '★' },
+      { n: 'Riciclatore', d: 'Gioca 5 partite a Dove lo butto?', ok: (m.partite_totali || 0) >= 5, s: '♻' },
+      { n: 'Maestro del nastro', d: 'Fai 300 punti in una partita', ok: (m.record || 0) >= 300, s: '300' },
+      { n: 'Poeta', d: 'Scrivi una nota', ok: state.scritte.length >= 1, s: '✎' },
+      { n: 'Primo cuore', d: 'Ricevi un cuore su una tua nota', ok: hearts >= 1, s: '♥' },
+      { n: 'Cacciatore di tesori', d: 'Apri 5 forzieri', ok: (m.forzieri || 0) >= 5, s: '5' },
+      { n: 'Collezionista', d: 'Raccogli 10 curiosità', ok: (m.curiosita || []).length >= 10, s: '10' }
+    ];
+  }
+
+  function medalsCard() {
+    var list = medals();
+    var n = list.filter(function (x) { return x.ok; }).length;
+    var wrap = el('div', 'meds');
+    wrap.appendChild(el('h4', 'sec', 'Medaglie · ' + n + ' su ' + list.length));
+    var grid = el('div', 'bds');
+    list.forEach(function (x) {
+      var d = el('div', 'bd' + (x.ok ? ' on' : ''));
+      d.setAttribute('aria-label', x.n + (x.ok ? ': ottenuta' : ': ' + x.d));
+      d.appendChild(el('i', null, x.s));
+      d.appendChild(el('span', null, x.n));
+      if (!x.ok) d.appendChild(el('small', null, x.d));
+      grid.appendChild(d);
     });
-    card.appendChild(ul);
-    return card;
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function passportCard() {
+    var got = state.sedi.filter(function (s) { return state.sbloccate[s.id]; }).length;
+    var wrap = el('div', 'pass-wrap');
+    wrap.appendChild(el('h4', 'sec', 'Il tuo passaporto · ' + got + ' su ' + (state.sedi.length || 14)));
+    var grid = el('div', 'pass');
+    state.sedi.forEach(function (s, i) {
+      var on = !!state.sbloccate[s.id];
+      var d = el('div', 'st' + (on ? ' on' : ''));
+      d.setAttribute('aria-label', s.nome + (on ? ': sbloccata' : ': da sbloccare'));
+      d.appendChild(el('i', null, initials(s.nome)));
+      d.appendChild(el('span', null, s.nome));
+      grid.appendChild(d);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function curiositaCard() {
+    var m = state.m;
+    var wrap = el('div', 'cur-wrap');
+    wrap.appendChild(el('h4', 'sec', 'Le tue curiosità · ' + m.curiosita.length + ' su ' + (m.curiosita_totali || m.curiosita.length)));
+    if (!m.curiosita.length) {
+      wrap.appendChild(el('p', 'cur-empty', 'Apri il forziere ogni giorno per raccogliere curiosità su Verona.'));
+      return wrap;
+    }
+    var ul = el('ul', 'cur');
+    m.curiosita.forEach(function (f) { ul.appendChild(el('li', null, f.testo)); });
+    wrap.appendChild(ul);
+    return wrap;
   }
 
   function likedCard() {
@@ -200,9 +408,9 @@
       });
       card.appendChild(ul);
     }
-    var go = el('a', 'gbtn io-link', 'Vai a Parole');
-    go.href = '#parole';
-    card.appendChild(go);
+    var link = el('a', 'gbtn io-link', 'Vai a Parole');
+    link.href = '#parole';
+    card.appendChild(link);
     return card;
   }
 
@@ -215,11 +423,20 @@
       view.appendChild(e);
       return;
     }
-    view.appendChild(profileCard());
-    view.appendChild(statsCard());
-    view.appendChild(sediCard());
-    view.appendChild(mineCard());
-    view.appendChild(likedCard());
+    var stack = el('div', 'stack');
+    stack.appendChild(meCard());
+    if (state.m) {
+      stack.appendChild(levelCard());
+      stack.appendChild(questsCard());
+      stack.appendChild(chestCard());
+    }
+    stack.appendChild(statsCard());
+    stack.appendChild(medalsCard());
+    stack.appendChild(passportCard());
+    if (state.m) stack.appendChild(curiositaCard());
+    stack.appendChild(mineCard());
+    stack.appendChild(likedCard());
+    view.appendChild(stack);
   }
 
   function refresh() {

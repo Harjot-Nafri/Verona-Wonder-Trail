@@ -80,7 +80,8 @@
   }
 
   function mount(view, onBack) {
-    var DURATION = 45;
+    var DURATION = 60;
+    var GAP = 28;
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var raf = 0, running = false, S = null;
 
@@ -118,6 +119,22 @@
       h.tabIndex = -1;
       card.appendChild(h);
       card.appendChild(el('p', null, 'Gli oggetti scorrono sul nastro. Tocca il contenitore giusto per quello con il bordo giallo, il più avanti. Hai ' + DURATION + ' secondi: più risposte giuste di fila, più punti.'));
+      var leg = el('ul', 'nb-legend');
+      BINS.forEach(function (b) {
+        var ex = ITEMS.filter(function (it) { return it[1] === b.id; }).slice(0, 3)
+          .map(function (it) { return it[0].toLowerCase(); }).join(', ');
+        var li = el('li');
+        var dot = el('span', 'nb-dot');
+        dot.style.background = b.c;
+        dot.setAttribute('aria-hidden', 'true');
+        li.appendChild(dot);
+        var t = el('span');
+        t.appendChild(el('strong', null, b.nome));
+        t.appendChild(document.createTextNode(': ' + ex + '…'));
+        li.appendChild(t);
+        leg.appendChild(li);
+      });
+      card.appendChild(leg);
       var go = el('button', 'gbtn', 'Gioca');
       go.type = 'button';
       go.addEventListener('click', start);
@@ -249,16 +266,16 @@
       S.el += dt;
       var W = S.belt.clientWidth;
 
-      S.spawn -= dt;
-      if (S.spawn <= 0) {
+      var minX = Infinity;
+      S.items.forEach(function (i) { if (i.x < minX) minX = i.x; });
+      if (!S.items.length || minX >= GAP) {
         if (!S.queue.length) S.queue = pick(ITEMS.length);
         var it = S.queue.pop();
         var n = el('div', 'nb-chip', it[0]);
         S.belt.appendChild(n);
         S.items.push({ d: it, n: n, x: -n.offsetWidth });
-        S.spawn = (calm ? 1.4 : 1) * Math.max(1.7, 3.0 - S.el * 0.03);
       }
-      var speed = (calm ? 0.6 : 1) * (62 + S.el * 1.4);
+      var speed = (calm ? 0.7 : 1) * (36 + S.el * 0.5);
       S.items.slice().forEach(function (i) {
         i.x += speed * dt;
         i.n.style.transform = 'translateX(' + i.x + 'px)';
@@ -280,6 +297,10 @@
 
     function result() {
       stop();
+      try {
+        var sb = window.WT && window.WT.sb;
+        if (sb) sb.rpc('registra_partita', { p_punteggio: S.score }).then(function () {}, function () {});
+      } catch (e) {}
       view.textContent = '';
       var card = el('div', 'gcard');
       card.appendChild(topBar('Risultato'));

@@ -92,8 +92,49 @@
     return ul;
   }
 
+  function flameSvg() {
+    var ns = 'http://www.w3.org/2000/svg';
+    var s = document.createElementNS(ns, 'svg');
+    s.setAttribute('viewBox', '0 0 54 62');
+    s.setAttribute('class', 'm-flame');
+    s.setAttribute('aria-hidden', 'true');
+    var p1 = document.createElementNS(ns, 'path');
+    p1.setAttribute('d', 'M27 2c3 14 20 20 20 38a20 20 0 0 1-40 0c0-8 4-12 8-16 0 6 3 9 6 10-3-12 2-22 6-32z');
+    p1.setAttribute('fill', '#ff9d8a');
+    var p2 = document.createElementNS(ns, 'path');
+    p2.setAttribute('d', 'M27 28c2 8 11 11 11 21a11 11 0 0 1-22 0c0-5 3-7 5-9 0 3 2 5 3 5-2-6 1-11 3-17z');
+    p2.setAttribute('fill', '#DEF434');
+    s.appendChild(p1);
+    s.appendChild(p2);
+    return s;
+  }
+
+  function streakCard() {
+    var today = todayStr();
+    var n = streak(state.done, today);
+    var card = el('div', 'm-streak');
+    card.appendChild(flameSvg());
+    var box = el('div');
+    box.appendChild(el('div', 'm-num', String(n)));
+    box.appendChild(el('div', 'm-lab', n === 1 ? 'giorno di serie' : 'giorni di serie'));
+    var week = el('div', 'm-week');
+    week.setAttribute('aria-hidden', 'true');
+    for (var i = 6; i >= 0; i--) {
+      var ds = addDays(today, -i);
+      week.appendChild(el('i', state.done[ds] ? 'd' : ds === today ? 't' : ''));
+    }
+    box.appendChild(week);
+    card.appendChild(box);
+    return card;
+  }
+
   function quizCard() {
-    var card = el('div', 'gcard');
+    var card = el('div', 'tile t-quiz');
+    ['b1', 'b2', 'b3'].forEach(function (c, k) {
+      var b = el('span', 'bub ' + c, k === 0 ? '?' : k === 1 ? '✓' : '');
+      b.setAttribute('aria-hidden', 'true');
+      card.appendChild(b);
+    });
     card.appendChild(el('h3', null, 'Quiz del giorno'));
     if (!state.loaded) {
       card.appendChild(el('p', null, 'Sto preparando le domande di oggi…'));
@@ -107,15 +148,12 @@
       card.appendChild(el('p', null, 'Le domande di oggi non sono ancora pronte. Riprova tra poco.'));
       return card;
     }
-    var today = todayStr();
-    var n = streak(state.done, today);
     var total = state.quiz.length;
     var done = answeredCount();
-    card.appendChild(el('p', null, total + ' domande su sostenibilità, inclusione e Verona. Una serie nuova ogni giorno.'));
-    card.appendChild(el('p', 'streak', 'Serie: ' + n + (n === 1 ? ' giorno' : ' giorni')));
-    card.appendChild(calendar());
+    card.insertBefore(el('span', 'chip', total + ' domande · circa 2 minuti'), card.querySelector('h3'));
+    card.appendChild(el('p', null, 'Sostenibilità, inclusione e Verona. Nuove domande ogni giorno.'));
     var label = done === 0 ? 'Inizia il quiz' : done < total ? 'Continua (' + done + ' su ' + total + ')' : 'Rivedi il risultato di oggi';
-    var b = el('button', 'gbtn', label);
+    var b = el('button', 'btn', label);
     b.type = 'button';
     b.addEventListener('click', playQuiz);
     card.appendChild(b);
@@ -123,25 +161,39 @@
   }
 
   function gameCard() {
-    var card = el('div', 'gcard');
+    var card = el('div', 'tile t-game');
+    card.appendChild(el('span', 'chip', '60 secondi · AMIA Verona'));
     card.appendChild(el('h3', null, 'Dove lo butto?'));
-    card.appendChild(el('p', null, 'Metti ogni rifiuto nel contenitore giusto, secondo le regole di AMIA Verona. Ogni partita ha 10 oggetti.'));
-    var b = el('button', 'gbtn', 'Gioca');
+    card.appendChild(el('p', null, 'Smista i rifiuti sul nastro: più risposte giuste di fila, più punti.'));
+    var go = el('div', 'go');
+    var b = el('button', 'btn', 'Gioca');
     b.type = 'button';
     b.addEventListener('click', function () {
       current = 'game';
       view.textContent = '';
       if (window.WT_RIFIUTI) window.WT_RIFIUTI.mount(view, showHome);
     });
-    card.appendChild(b);
+    go.appendChild(b);
+    card.appendChild(go);
+    var belt = el('div', 'belt');
+    belt.setAttribute('aria-hidden', 'true');
+    card.appendChild(belt);
     return card;
   }
 
   function showHome() {
     current = 'home';
     view.textContent = '';
-    view.appendChild(quizCard());
-    view.appendChild(gameCard());
+    var stack = el('div', 'stack');
+    if (state.loaded && !state.error) stack.appendChild(streakCard());
+    stack.appendChild(quizCard());
+    stack.appendChild(gameCard());
+    if (state.loaded && !state.error) {
+      var cal = el('div', 'cal-wrap');
+      cal.appendChild(calendar());
+      stack.appendChild(cal);
+    }
+    view.appendChild(stack);
   }
 
   // ---- quiz ----
