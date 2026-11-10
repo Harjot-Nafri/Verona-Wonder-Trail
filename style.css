@@ -831,3 +831,7 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }
+
+.brand{display:inline-flex;align-items:center;gap:10px;letter-spacing:0;text-transform:none}
+.brand-sym{height:26px;width:26px}
+.brand-txt{height:24px;width:auto}
