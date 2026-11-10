@@ -702,6 +702,16 @@ body:not([data-view="io"]) .io{display:none}
 .qcard .fb strong{font-family:'Anton',sans-serif;font-weight:400;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--acid)}
 .qcard .fb p{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:16px}
 
+/* Carte: sfondo a righe, avanzamento a rombi, riquadro per scrivere */
+body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),radial-gradient(90% 40% at 50% 0%,rgba(15,127,196,.6),transparent 70%),var(--midnight);background-attachment:fixed}
+.qcard .qprog:empty{display:none}
+.qdots{display:flex;align-items:center;justify-content:space-between;margin:2px 0 14px}
+.qd{display:flex;gap:11px;align-items:center;padding-left:4px}
+.qd i{flex:none;width:13px;height:13px;border-radius:2px;transform:rotate(45deg);background:rgba(255,255,255,.22)}
+.qd i.on{background:var(--acid)}
+.qserie{padding:3px 12px;border:1px solid rgba(222,244,52,.5);border-radius:8px;background:rgba(255,255,255,.12);color:var(--acid);font-weight:700;font-size:15px}
+.parole .gcard:has(.cv){background:rgba(0,0,30,.35);border:1.5px solid rgba(222,244,52,.35);border-radius:18px}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }

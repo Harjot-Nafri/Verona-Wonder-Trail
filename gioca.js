@@ -169,7 +169,16 @@
     var q = state.quiz[i];
     var total = state.quiz.length;
     var card = el('div', 'gcard qcard');
-    card.appendChild(topBar('Domanda ' + (i + 1) + ' di ' + total));
+    card.appendChild(topBar(''));
+    var prog = el('div', 'qdots');
+    var dots = el('span', 'qd');
+    dots.setAttribute('role', 'img');
+    dots.setAttribute('aria-label', 'Domanda ' + (i + 1) + ' di ' + total);
+    for (var d = 0; d < total; d++) dots.appendChild(el('i', d <= i ? 'on' : ''));
+    prog.appendChild(dots);
+    var sn = streak(state.done, todayStr());
+    prog.appendChild(el('span', 'qserie', 'Serie ' + sn));
+    card.appendChild(prog);
     card.appendChild(el('span', 'chip', TOPICS[q.argomento] || q.argomento));
     var h = el('h3', 'qtext', q.testo);
     h.tabIndex = -1;
