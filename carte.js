@@ -39,6 +39,19 @@ window.WT_CARDS = (function () {
     return s;
   }
 
+  function burst(from) {
+    var r = from.getBoundingClientRect(), e = ['❤', '🧡', '💜'];
+    for (var i = 0; i < 6; i++) {
+      var h = el('i', 'hc-fly', e[i % 3]);
+      h.style.left = (r.left + r.width / 2 - 10) + 'px';
+      h.style.top = r.top + 'px';
+      h.style.setProperty('--x', ((Math.random() - .5) * 100) + 'px');
+      h.style.animationDelay = (i * 0.05) + 's';
+      document.body.appendChild(h);
+      setTimeout((function (n) { return function () { n.remove(); }; })(h), 1300);
+    }
+  }
+
   // opts: { isNew, off, byText, toggle(note, want) -> Promise<{like, mio_like}|null>, extra: Node }
   function build(n, opts) {
     opts = opts || {};
@@ -86,6 +99,7 @@ window.WT_CARDS = (function () {
           heart.setAttribute('aria-label', d.mio_like ? 'Togli il cuore' : 'Metti il cuore');
           cnt.textContent = String(d.like);
           setRarity(d.like);
+          if (d.mio_like) burst(heart);
           heart.classList.add('pop');
           setTimeout(function () { heart.classList.remove('pop'); }, 180);
         });
@@ -103,5 +117,5 @@ window.WT_CARDS = (function () {
     return li;
   }
 
-  return { COVERS: COVERS, coverLabel: coverLabel, coverSrc: coverSrc, rarity: rarity, build: build };
+  return { COVERS: COVERS, coverLabel: coverLabel, coverSrc: coverSrc, rarity: rarity, build: build, el: el };
 })();

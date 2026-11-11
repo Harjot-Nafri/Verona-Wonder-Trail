@@ -861,3 +861,35 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 
 .spot{position:fixed;left:0;top:0;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .4s;background:radial-gradient(circle,rgba(253,143,50,.55) 0,rgba(112,34,252,.35) 40%,transparent 70%);filter:blur(10px);mix-blend-mode:screen;will-change:transform}
 .screen{position:relative;z-index:1}
+
+/* ===== Parole: note come polaroid sulla bacheca ===== */
+@keyframes pdrop{from{opacity:0;transform:translateY(-36px) rotate(calc(var(--r) * 3)) scale(.85)}}
+@keyframes pfly{to{transform:translate(var(--x),-120px) scale(1.5);opacity:0}}
+.hc-list{gap:26px;padding:10px 6px 0}
+.hc{--r:-2deg;background:#fff;border:0;border-radius:4px;padding:10px 10px 12px;gap:0;color:var(--midnight);transform:rotate(var(--r));animation:pdrop .6s cubic-bezier(.2,1.5,.4,1) both;box-shadow:0 12px 26px rgba(0,0,0,.5)}
+.hc:nth-child(4n+2){--r:2.2deg}.hc:nth-child(4n+3){--r:-1.2deg}.hc:nth-child(4n){--r:3deg}
+.hc::before{content:"";position:absolute;z-index:3;top:-11px;left:50%;width:54px;height:18px;margin-left:-27px;background:rgba(253,143,50,.78);transform:rotate(-3deg);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.hc:nth-child(even)::before{background:rgba(201,168,255,.85);transform:rotate(3deg)}
+.hc.new{box-shadow:0 0 0 3px rgba(253,143,50,.7),0 0 34px rgba(253,143,50,.45),0 12px 26px rgba(0,0,0,.5)}
+.hc.off{transform:rotate(var(--r));animation:none}
+.hc-ph{aspect-ratio:1;border:0;border-radius:2px}
+.hc-rar{right:8px;top:8px;border:0;border-radius:99px;font-size:10px;padding:4px 10px;background:rgba(1,1,2,.7);color:#fff;backdrop-filter:blur(6px)}
+.hc-rar[data-r="Leggendaria"]{background:linear-gradient(90deg,#7022FC,#FD8F32);color:#fff}
+.hc-text{order:2;margin:14px 0 8px;padding:0 4px;text-align:left;font-size:21px}
+.hc-tag{order:3;justify-self:start;margin:0 4px 6px;padding:0;background:none;color:#7022FC;clip-path:none;font-size:10px;text-align:left}
+.hc-foot{order:4;border-top:1px dashed rgba(1,1,2,.2);padding:8px 4px 0}
+.hc-by{color:var(--midnight)}
+.hc .pa-confirm,.hc .hc-state{order:5;color:var(--midnight);margin-top:6px}
+.hc .pa-link{color:rgba(1,1,2,.6)}
+.hc-heart{border-color:rgba(1,1,2,.25);color:var(--midnight);background:rgba(1,1,2,.06)}
+.hc-heart[aria-pressed="true"]{background:var(--midnight);border-color:var(--midnight);color:#ff6fae}
+.hc-count{color:var(--midnight)}.hc-count svg{fill:#ff6fae}
+.hc-fly{position:fixed;z-index:999;pointer-events:none;font-size:22px;animation:pfly 1s ease-out forwards}
+/* anteprima live nel riquadro */
+.pa-prevwrap{width:min(64%,230px);margin:18px auto 14px}
+.pa-prevwrap .hc{animation:none;pointer-events:none}
+.pa-prevwrap .hc-text{font-size:17px}
+.pa-prevlab{text-align:center;margin:12px 0 0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.cv-opt img{border-radius:12px}
+.cv-opt input:checked+img{transform:scale(1.08)}
+@media (prefers-reduced-motion:reduce){.hc{animation:none}}

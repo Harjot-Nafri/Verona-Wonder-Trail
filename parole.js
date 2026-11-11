@@ -197,6 +197,25 @@
     cv.appendChild(el('p', 'pa-hint', 'Se non scegli, la copertina sarà a caso.'));
     card.appendChild(cv);
 
+    var pvLab = el('p', 'pa-prevlab', 'Anteprima della tua nota');
+    var pv = el('div', 'pa-prevwrap');
+    card.appendChild(pvLab);
+    card.appendChild(pv);
+    var pvCover = window.WT_CARDS.COVERS[Math.floor(Math.random() * window.WT_CARDS.COVERS.length)][0];
+    function drawPrev() {
+      var ul = el('ul', 'pa-list hc-list');
+      ul.style.padding = '0';
+      ul.appendChild(window.WT_CARDS.build({
+        copertina: draft.cover || pvCover,
+        sede_nome: (sel.options[sel.selectedIndex] || {}).text || '',
+        testo: draft.testo.trim() || 'Qui vedi la tua nota…',
+        like: 0
+      }, { byText: draft.anonima ? 'Anonimo' : 'Tu' }));
+      pv.textContent = '';
+      pv.appendChild(ul);
+    }
+    cv.addEventListener('change', drawPrev);
+
     var lab2 = el('label', 'pa-label', 'La tua nota');
     lab2.setAttribute('for', 'pa-testo');
     var ta = el('textarea', 'pa-text');
@@ -232,6 +251,7 @@
       draft.sede = sel.value;
       count.textContent = ta.value.length + '/' + MAX;
       btn.disabled = ta.value.trim().length < MIN;
+      drawPrev();
     }
     ta.addEventListener('input', sync);
     cb.addEventListener('change', sync);
