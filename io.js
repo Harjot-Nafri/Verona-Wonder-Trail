@@ -381,39 +381,6 @@
     return wrap;
   }
 
-  function likedCard() {
-    var card = el('div', 'gcard');
-    card.appendChild(el('h4', 'sec', 'Note che ti sono piaciute'));
-    var liked = state.ricevute.filter(function (n) { return n.mio_like; });
-    if (!liked.length) {
-      card.appendChild(el('p', null, 'Metti il cuore alle note che ti toccano: le ritrovi qui.'));
-      return card;
-    }
-    var ul = el('ul', 'pa-list hc-list');
-    liked.forEach(function (n) { ul.appendChild(window.WT_CARDS.build(n, {})); });
-    card.appendChild(ul);
-    return card;
-  }
-
-  function mineCard() {
-    var card = el('div', 'gcard');
-    card.appendChild(el('h4', 'sec', 'Le tue parole'));
-    if (!state.scritte.length) {
-      card.appendChild(el('p', null, 'Non hai ancora scritto una nota.'));
-    } else {
-      var ul = el('ul', 'pa-list hc-list');
-      state.scritte.forEach(function (n) {
-        var extra = n.nascosta ? el('p', 'pa-meta hc-state', 'Nascosta dalla moderazione') : null;
-        ul.appendChild(window.WT_CARDS.build(n, { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: extra }));
-      });
-      card.appendChild(ul);
-    }
-    var link = el('a', 'gbtn io-link', 'Vai a Parole');
-    link.href = '#parole';
-    card.appendChild(link);
-    return card;
-  }
-
   function render() {
     view.textContent = '';
     if (!state.loaded) { var l = el('div', 'gcard'); l.appendChild(el('p', null, 'Carico il tuo profilo…')); view.appendChild(l); return; }
@@ -434,8 +401,6 @@
     stack.appendChild(medalsCard());
     stack.appendChild(passportCard());
     if (state.m) stack.appendChild(curiositaCard());
-    stack.appendChild(mineCard());
-    stack.appendChild(likedCard());
     view.appendChild(stack);
   }
 
