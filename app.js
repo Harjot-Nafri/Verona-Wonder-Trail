@@ -211,14 +211,42 @@
     });
   }
 
+  var tiles = null;
+  var ask = null;
+  function syncTiles() {
+    if (!map) return;
+    var on = !!(window.WT_CONSENT && window.WT_CONSENT.map());
+    if (on && !tiles) {
+      tiles = window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+    } else if (!on && tiles) {
+      map.removeLayer(tiles);
+      tiles = null;
+    }
+    if (on && ask) { ask.remove(); ask = null; }
+    if (!on && !ask) {
+      ask = document.createElement('div');
+      ask.className = 'map-ask';
+      var p = document.createElement('p');
+      p.textContent = 'La mappa di sfondo è fornita da OpenStreetMap, un servizio esterno. Le sedi restano visibili anche senza.';
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = 'Attiva la mappa';
+      b.addEventListener('click', function () { if (window.WT_CONSENT) window.WT_CONSENT.open(); });
+      ask.appendChild(p);
+      ask.appendChild(b);
+      mapEl.appendChild(ask);
+    }
+  }
+  document.addEventListener('wt:consent', syncTiles);
+
   function drawMap() {
     if (!window.L || !mapEl) return;
     if (!map) {
       map = window.L.map(mapEl, { center: [45.4384, 10.9916], zoom: 13, zoomControl: true });
-      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
+      syncTiles();
     }
     var pts = [];
     sedi.forEach(function (s) {

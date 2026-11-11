@@ -944,3 +944,10 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .hc.off.r-leg,.hc.off.r-rara{animation:none;box-shadow:0 12px 26px rgba(0,0,0,.5)}
 @media (prefers-reduced-motion:reduce){.hc.r-leg{animation:hspin 4s linear infinite}.hc.r-leg .hc-text,.hc-sp{animation:none}}
 .hc-ph{background:#ece6f8}
+
+/* mappa senza consenso */
+.map-ask{position:absolute;left:12px;right:12px;bottom:12px;z-index:700;padding:12px;border-radius:16px;background:rgba(1,1,2,.85);border:1px solid rgba(253,143,50,.5);text-align:center;font-size:13px}
+.map-ask p{margin:0 0 8px;color:rgba(255,255,255,.9)}
+.map-ask button{min-height:44px;padding:0 18px;border:0;border-radius:99px;background:linear-gradient(90deg,var(--ocean),var(--acid));color:#fff;font:700 14px 'Outfit',sans-serif;cursor:pointer}
+.legal{margin:0 auto;padding:0 20px 96px;max-width:520px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)}
+.legal a,.legal button{background:none;border:0;padding:8px 4px;color:rgba(255,255,255,.8);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
