@@ -331,7 +331,9 @@
     var cnt = el('span', 'pm-cnt');
     cnt.setAttribute('aria-live', 'polite');
     nav.appendChild(prev); nav.appendChild(cnt); nav.appendChild(next);
-    node.appendChild(x); node.appendChild(stage); node.appendChild(nav);
+    var tip = el('p', 'pm-tip', '← Scorri con il dito per le altre note →');
+    tip.hidden = notes.length < 2;
+    node.appendChild(x); node.appendChild(stage); node.appendChild(tip); node.appendChild(nav);
     node.addEventListener('click', function (e) { if (e.target === node || e.target === stage) closeModal(); });
     function show(k) {
       i = (k + notes.length) % notes.length;
@@ -400,7 +402,7 @@
       var o = receivedOpts(n);
       return o;
     }));
-    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per leggere la nota.'));
+    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per aprire la nota, poi scorri con il dito per vedere le altre.'));
     return card;
   }
 
@@ -416,7 +418,7 @@
         : n.scambiata ? '' : 'In attesa dello scambio';
       return { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: st ? el('p', 'pa-meta hc-state', st) : null };
     }));
-    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per aprire la nota. L\'arancione indica le più amate.'));
+    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per aprire la nota, poi scorri con il dito per vedere le altre. L\'arancione indica le più amate.'));
     return card;
   }
 

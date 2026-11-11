@@ -912,3 +912,12 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .pm-ar{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--acid);background:rgba(1,1,2,.7);color:var(--acid);font-size:24px;cursor:pointer}
 .pm-ar[hidden]{display:none}
 .pm-cnt{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--acid)}
+/* frecce ai lati della polaroid, a metà altezza */
+.pm-nav{position:static;display:block;height:0}
+.pm-ar{position:fixed;top:50%;margin-top:-26px;z-index:2001;width:52px;height:52px;font-size:28px;background:rgba(1,1,2,.75);box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.pm-ar:first-child{left:6px}
+.pm-ar:last-child{right:6px}
+.pm-cnt{position:fixed;left:0;right:0;top:12px;height:44px;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2001}
+.pm{padding:76px 14px 40px}
+.pm-tip{margin:14px 0 0;text-align:center;font-size:13px;color:rgba(255,255,255,.75)}
+.pm-tip[hidden]{display:none}
