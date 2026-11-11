@@ -62,7 +62,8 @@ window.WT_CARDS = (function () {
       var img = el('img');
       img.src = coverSrc(n.copertina);
       img.alt = coverLabel(n.copertina);
-      img.loading = 'lazy';
+      img.loading = opts.eager ? 'eager' : 'lazy';
+      if (opts.eager) img.decoding = 'sync';
       ph.appendChild(img);
     }
     var badge = el('span', 'hc-rar');

@@ -943,3 +943,4 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .hc.r-leg .hc-sp::after{width:16px;height:2px;margin:-1px 0 0 -8px}
 .hc.off.r-leg,.hc.off.r-rara{animation:none;box-shadow:0 12px 26px rgba(0,0,0,.5)}
 @media (prefers-reduced-motion:reduce){.hc.r-leg{animation:hspin 4s linear infinite}.hc.r-leg .hc-text,.hc-sp{animation:none}}
+.hc-ph{background:#ece6f8}

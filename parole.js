@@ -341,9 +341,14 @@
       var ul = el('ul', 'pa-list hc-list');
       var oo = optsFor(notes[i]);
       oo.tilt = true;
+      oo.eager = true;
       ul.appendChild(window.WT_CARDS.build(notes[i], oo));
       stage.appendChild(ul);
       cnt.textContent = (i + 1) + ' / ' + notes.length;
+      [i - 1, i + 1].forEach(function (k) {
+        var nb = notes[(k + notes.length) % notes.length];
+        if (nb && nb.copertina) { var pre = new Image(); pre.src = window.WT_CARDS.coverSrc(nb.copertina); }
+      });
       prev.hidden = next.hidden = notes.length < 2;
     }
     prev.addEventListener('click', function () { show(i - 1); });
