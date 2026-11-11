@@ -277,7 +277,7 @@
     return card;
   }
 
-  function receivedNote(n) {
+  function receivedOpts(n) {
     var slot = el('div', 'pa-confirm');
     var rep = el('button', 'pa-link', 'Segnala');
     rep.type = 'button';
@@ -286,7 +286,7 @@
       slot.appendChild(document.createTextNode('Segnalare questa nota?'));
       var yes = el('button', 'pa-link', 'Sì');
       yes.type = 'button';
-      yes.addEventListener('click', function () { report(n); });
+      yes.addEventListener('click', function () { closeModal(); report(n); });
       var no = el('button', 'pa-link', 'No');
       no.type = 'button';
       no.addEventListener('click', function () { slot.textContent = ''; slot.appendChild(rep); rep.focus(); });
@@ -295,42 +295,133 @@
       yes.focus();
     });
     slot.appendChild(rep);
-    return window.WT_CARDS.build(n, { isNew: n.id === flash.newId, toggle: toggleHeart, extra: slot });
+    return { isNew: n.id === flash.newId, toggle: toggleHeart, extra: slot };
+  }
+
+  // ---- griglia di miniature + polaroid a schermo intero ----
+  var modal = null;
+  function closeModal() {
+    if (!modal) return;
+    var m = modal;
+    modal = null;
+    document.removeEventListener('keydown', m.key);
+    m.node.remove();
+    document.body.style.overflow = '';
+    if (m.opener && document.contains(m.opener)) m.opener.focus();
+    var o = m.opener;
+    if (o && o.refresh) o.refresh();
+  }
+  function openModal(notes, i, optsFor, opener) {
+    closeModal();
+    var node = el('div', 'pm');
+    node.setAttribute('role', 'dialog');
+    node.setAttribute('aria-modal', 'true');
+    node.setAttribute('aria-label', 'Nota');
+    var x = el('button', 'pm-x', '✕');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Chiudi');
+    x.addEventListener('click', closeModal);
+    var stage = el('div', 'pm-stage');
+    var nav = el('div', 'pm-nav');
+    var prev = el('button', 'pm-ar', '‹');
+    var next = el('button', 'pm-ar', '›');
+    prev.type = next.type = 'button';
+    prev.setAttribute('aria-label', 'Nota precedente');
+    next.setAttribute('aria-label', 'Nota successiva');
+    var cnt = el('span', 'pm-cnt');
+    cnt.setAttribute('aria-live', 'polite');
+    nav.appendChild(prev); nav.appendChild(cnt); nav.appendChild(next);
+    node.appendChild(x); node.appendChild(stage); node.appendChild(nav);
+    node.addEventListener('click', function (e) { if (e.target === node || e.target === stage) closeModal(); });
+    function show(k) {
+      i = (k + notes.length) % notes.length;
+      stage.textContent = '';
+      var ul = el('ul', 'pa-list hc-list');
+      ul.appendChild(window.WT_CARDS.build(notes[i], optsFor(notes[i])));
+      stage.appendChild(ul);
+      cnt.textContent = (i + 1) + ' / ' + notes.length;
+      prev.hidden = next.hidden = notes.length < 2;
+    }
+    prev.addEventListener('click', function () { show(i - 1); });
+    next.addEventListener('click', function () { show(i + 1); });
+    var sx = null;
+    node.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+    node.addEventListener('touchend', function (e) {
+      if (sx == null) return;
+      var d = e.changedTouches[0].clientX - sx;
+      sx = null;
+      if (Math.abs(d) > 60 && notes.length > 1) show(d < 0 ? i + 1 : i - 1);
+    });
+    var key = function (e) {
+      if (e.key === 'Escape') closeModal();
+      else if (e.key === 'ArrowLeft' && notes.length > 1) show(i - 1);
+      else if (e.key === 'ArrowRight' && notes.length > 1) show(i + 1);
+    };
+    document.addEventListener('keydown', key);
+    modal = { node: node, key: key, opener: opener };
+    document.body.appendChild(node);
+    document.body.style.overflow = 'hidden';
+    show(i);
+    x.focus();
+  }
+  function gridOf(notes, optsFor, openIdx) {
+    var g = el('div', 'pg');
+    var counts = [];
+    notes.forEach(function (n, i) {
+      var b = el('button', 'pg-it' + (n.nascosta ? ' off' : '') + ((n.like || 0) >= 8 ? ' leg' : ''));
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Apri la nota scritta a ' + n.sede_nome + ', ' + (n.like || 0) + ' cuori');
+      if (n.copertina) {
+        var im = el('img');
+        im.src = window.WT_CARDS.coverSrc(n.copertina);
+        im.alt = '';
+        im.loading = 'lazy';
+        b.appendChild(im);
+      }
+      var c = el('span', 'pg-h', '♥ ' + (n.like || 0));
+      counts.push(function () { c.textContent = '♥ ' + (n.like || 0); b.classList.toggle('leg', (n.like || 0) >= 8); });
+      b.appendChild(c);
+      if (n.id === flash.newId) b.classList.add('new');
+      b.refresh = function () { counts.forEach(function (f) { f(); }); };
+      b.addEventListener('click', function () { openModal(notes, i, optsFor, b); });
+      g.appendChild(b);
+    });
+    return g;
   }
 
   function receivedCard() {
     var card = el('div', 'gcard');
-    card.appendChild(el('h4', 'sec', 'Note ricevute'));
+    card.appendChild(el('h4', 'sec', 'Note ricevute (' + state.ricevute.length + ')'));
     if (!state.ricevute.length) {
       card.appendChild(el('p', null, 'Ancora nessuna. Scrivi la tua nota e ne riceverai una in cambio.'));
       return card;
     }
-    var ul = el('ul', 'pa-list hc-list');
-    state.ricevute.forEach(function (n) { ul.appendChild(receivedNote(n)); });
-    card.appendChild(ul);
+    card.appendChild(gridOf(state.ricevute, function (n) {
+      var o = receivedOpts(n);
+      return o;
+    }));
+    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per leggere la nota.'));
     return card;
   }
 
   function mineCard() {
     var card = el('div', 'gcard');
-    card.appendChild(el('h4', 'sec', 'Le tue note'));
+    card.appendChild(el('h4', 'sec', 'Le tue note (' + state.scritte.length + ')'));
     if (!state.scritte.length) {
       card.appendChild(el('p', null, 'Quando scrivi una nota, qui vedi quanti cuori riceve.'));
       return card;
     }
-    var ul = el('ul', 'pa-list hc-list');
-    state.scritte.forEach(function (n) {
+    card.appendChild(gridOf(state.scritte, function (n) {
       var st = n.nascosta ? 'Nascosta dalla moderazione'
         : n.scambiata ? '' : 'In attesa dello scambio';
-      var extra = null;
-      if (st) { extra = el('p', 'pa-meta hc-state', st); }
-      ul.appendChild(window.WT_CARDS.build(n, { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: extra }));
-    });
-    card.appendChild(ul);
+      return { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: st ? el('p', 'pa-meta hc-state', st) : null };
+    }));
+    card.appendChild(el('p', 'pa-hint', 'Tocca una foto per aprire la nota. L\'arancione indica le più amate.'));
     return card;
   }
 
   function render() {
+    closeModal();
     view.textContent = '';
     if (!state.loaded) {
       var l = el('div', 'gcard');
@@ -359,6 +450,11 @@
       view.appendChild(receivedCard());
     }
     view.appendChild(mineCard());
+    if (flash.newId) {
+      var ni = -1;
+      state.ricevute.forEach(function (r, k) { if (r.id === flash.newId) ni = k; });
+      if (ni >= 0) openModal(state.ricevute, ni, receivedOpts, view.querySelector('.pg-it.new'));
+    }
     flash.newId = null;
   }
 

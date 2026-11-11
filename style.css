@@ -893,3 +893,22 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .cv-opt img{border-radius:12px}
 .cv-opt input:checked+img{transform:scale(1.08)}
 @media (prefers-reduced-motion:reduce){.hc{animation:none}}
+
+/* Parole: griglia di miniature + polaroid aperta */
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.pg-it{position:relative;display:block;padding:0;border:0;aspect-ratio:1;background:#2a0f7a;overflow:hidden;cursor:pointer;border-radius:4px}
+.pg-it img{display:block;width:100%;height:100%;object-fit:cover}
+.pg-it::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(1,1,2,.7));pointer-events:none}
+.pg-it.leg{box-shadow:inset 0 0 0 2px var(--acid)}
+.pg-it.new{box-shadow:inset 0 0 0 3px var(--acid),0 0 14px rgba(253,143,50,.7)}
+.pg-it.off{opacity:.45}
+.pg-it:focus-visible{outline:3px solid var(--white);outline-offset:2px}
+.pg-h{position:absolute;left:6px;bottom:4px;z-index:1;font-weight:700;font-size:12px;color:#fff;text-shadow:0 1px 4px #000}
+.pm{position:fixed;inset:0;z-index:200;background:rgba(1,1,2,.88);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:56px 22px 28px}
+.pm-x{position:fixed;right:14px;top:12px;z-index:201;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:20px;cursor:pointer}
+.pm-stage{width:min(100%,360px);margin:auto 0}
+.pm-stage .hc-list{padding:14px 0 0}
+.pm-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:22px;flex:none}
+.pm-ar{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--acid);background:rgba(253,143,50,.12);color:var(--acid);font-size:24px;cursor:pointer}
+.pm-ar[hidden]{display:none}
+.pm-cnt{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--acid)}
