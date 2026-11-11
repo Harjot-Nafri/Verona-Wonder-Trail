@@ -9,11 +9,10 @@
 <link rel="icon" href="logo/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
 <meta name="description" content="Scansiona i QR nelle sedi dell'Università di Verona, sblocca la loro storia e scrivi agli altri poli.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Outfit:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,500&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="consent.css">
 </head>
 <body data-view="top">
 <main class="screen" id="top">
@@ -86,6 +85,7 @@
 <div id="io-view"></div>
 </section>
 
+<p class="legal"><a href="privacy.html">Privacy</a> · <button type="button" id="open-consent">Gestisci cookie</button> · <a href="https://verona-wild-wonder-trail.lovable.app/" target="_blank" rel="noopener">Versione beta ↗</a></p>
 <nav class="dock" aria-label="Sezioni del sito">
 <a href="#top">Home</a>
 <a href="#mappa">Sedi</a>
@@ -123,7 +123,7 @@
   show(location.hash.slice(1));
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="vendor/leaflet/leaflet.js"></script>
 <div class="scan" id="scan" hidden role="dialog" aria-modal="true" aria-label="Scansiona il QR di una sede">
 <video id="scan-video" playsinline muted></video>
 <div class="scan-frame" aria-hidden="true"></div>
@@ -132,9 +132,10 @@
 </div>
 <canvas id="scan-canvas" hidden></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="vendor/supabase.js"></script>
 <script src="config.js"></script>
+<script src="consent.js"></script>
 <script src="sblocco.js" defer></script>
 <script src="app.js" defer></script>
 <script src="rifiuti.js" defer></script>
@@ -163,5 +164,6 @@ var r=document.documentElement.style;r.setProperty('--px',(x*18)+'%');r.setPrope
 requestAnimationFrame(f)})();
 })();
 </script>
+<script>document.getElementById("open-consent").addEventListener("click",function(){window.WT_CONSENT.open();});</script>
 </body>
 </html>
