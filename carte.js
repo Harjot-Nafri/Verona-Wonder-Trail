@@ -68,12 +68,40 @@ window.WT_CARDS = (function () {
     var badge = el('span', 'hc-rar');
     function setRarity(count) {
       var r = rarity(count);
+      li.classList.toggle('r-rara', r === 'Rara');
+      li.classList.toggle('r-leg', r === 'Leggendaria');
       badge.textContent = r;
       badge.setAttribute('data-r', r);
     }
     setRarity(n.like || 0);
     ph.appendChild(badge);
     li.appendChild(ph);
+    [['-6px', '30%', null, null, '.2s'], [null, '18%', '-6px', null, '1s'], [null, null, '12%', '-8px', '1.6s'], ['14%', null, null, null, '.7s']].forEach(function (q, k) {
+      var sp = el('i', 'hc-sp');
+      if (k === 0) { sp.style.left = '-6px'; sp.style.top = '30%'; }
+      if (k === 1) { sp.style.right = '-6px'; sp.style.top = '18%'; }
+      if (k === 2) { sp.style.right = '12%'; sp.style.bottom = '-8px'; }
+      if (k === 3) { sp.style.left = '14%'; sp.style.top = '-8px'; }
+      sp.style.animationDelay = q[4];
+      sp.setAttribute('aria-hidden', 'true');
+      li.appendChild(sp);
+    });
+    if (opts.tilt) {
+      var mv = function (x, y) {
+        var r = li.getBoundingClientRect();
+        var px = Math.max(0, Math.min(1, (x - r.left) / r.width));
+        var py = Math.max(0, Math.min(1, (y - r.top) / r.height));
+        li.style.setProperty('--mx', px * 100 + '%');
+        li.style.setProperty('--my', py * 100 + '%');
+        li.style.setProperty('--hx', px * 100 + '%');
+        li.style.setProperty('--rx', ((0.5 - py) * 12) + 'deg');
+        li.style.setProperty('--ry', ((px - 0.5) * 12) + 'deg');
+      };
+      li.classList.add('tilt');
+      li.addEventListener('pointermove', function (e) { mv(e.clientX, e.clientY); });
+      li.addEventListener('pointerleave', function () { li.style.setProperty('--rx', '0deg'); li.style.setProperty('--ry', '0deg'); });
+      li.addEventListener('touchmove', function (e) { mv(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    }
 
     li.appendChild(el('p', 'hc-tag', 'Scritta a ' + n.sede_nome));
     li.appendChild(el('p', 'hc-text', '«' + n.testo + '»'));

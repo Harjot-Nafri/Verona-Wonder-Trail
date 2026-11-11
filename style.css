@@ -921,3 +921,25 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .pm{padding:76px 14px 40px}
 .pm-tip{margin:14px 0 0;text-align:center;font-size:13px;color:rgba(255,255,255,.75)}
 .pm-tip[hidden]{display:none}
+
+/* ===== Rarità: effetti olografici (solo sulle polaroid, non sulle miniature) ===== */
+@keyframes hcsheen{to{background-position:0 0}}
+@keyframes hctw{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
+.hc{--mx:50%;--my:50%;--rx:0deg;--ry:0deg;transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) rotate(var(--r))}
+.hc.tilt{transition:transform .2s;touch-action:pan-y}
+.hc-sp{display:none}
+.hc.r-rara{background:linear-gradient(135deg,#fff,#e8dcff 45%,#fff 70%,#d9c4ff);box-shadow:0 14px 30px rgba(0,0,0,.55),0 0 0 2px #C9A8FF,0 0 26px rgba(201,168,255,.5)}
+.hc.r-rara .hc-ph::after{background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.85),rgba(190,150,255,.45) 30%,transparent 60%);animation:none;mix-blend-mode:overlay}
+.hc.r-rara .hc-rar{background:#7022FC}
+.hc.r-leg{border:7px solid transparent;padding:6px 6px 10px;border-radius:12px;background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--a),#FD8F32,#ff5fb0,#7022FC,#3ec6ff,#FFB36B,#C9A8FF,#FD8F32) border-box;animation:pdrop .6s cubic-bezier(.2,1.5,.4,1) both,hspin 4s linear infinite;box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 40px rgba(253,143,50,.55),0 0 70px rgba(112,34,252,.4)}
+.hc.r-leg::before{top:-18px}
+.hc.r-leg .hc-ph::after{mix-blend-mode:color-dodge;opacity:.65;background:linear-gradient(115deg,transparent 20%,rgba(255,120,200,.7) 35%,rgba(255,230,120,.7) 45%,rgba(100,220,255,.7) 55%,rgba(170,120,255,.7) 65%,transparent 80%) var(--hx,0%) 0/260% 100%;animation:none;transition:background-position .1s}
+.hc.r-leg .hc-ph::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:overlay;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.9),transparent 45%)}
+.hc.r-leg .hc-rar{background:linear-gradient(90deg,#7022FC,#FD8F32)}
+.hc.r-leg .hc-text{background:linear-gradient(90deg,#7022FC,#c2185b,#FD8F32,#7022FC);background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hcsheen 3s linear infinite alternate}
+.hc.r-leg .hc-sp{display:block;position:absolute;z-index:5;width:16px;height:16px;pointer-events:none;animation:hctw 2.2s ease-in-out infinite}
+.hc.r-leg .hc-sp::before,.hc.r-leg .hc-sp::after{content:"";position:absolute;left:50%;top:50%;background:#fff;border-radius:2px;box-shadow:0 0 6px #fff,0 0 12px #FD8F32}
+.hc.r-leg .hc-sp::before{width:2px;height:16px;margin:-8px 0 0 -1px}
+.hc.r-leg .hc-sp::after{width:16px;height:2px;margin:-1px 0 0 -8px}
+.hc.off.r-leg,.hc.off.r-rara{animation:none;box-shadow:0 12px 26px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){.hc.r-leg{animation:hspin 4s linear infinite}.hc.r-leg .hc-text,.hc-sp{animation:none}}

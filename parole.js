@@ -339,7 +339,9 @@
       i = (k + notes.length) % notes.length;
       stage.textContent = '';
       var ul = el('ul', 'pa-list hc-list');
-      ul.appendChild(window.WT_CARDS.build(notes[i], optsFor(notes[i])));
+      var oo = optsFor(notes[i]);
+      oo.tilt = true;
+      ul.appendChild(window.WT_CARDS.build(notes[i], oo));
       stage.appendChild(ul);
       cnt.textContent = (i + 1) + ' / ' + notes.length;
       prev.hidden = next.hidden = notes.length < 2;
