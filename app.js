@@ -440,8 +440,6 @@
         }
         spBody.appendChild(alb);
       }
-            addBlock('Storia', c.storia || 'Presto qui troverai la storia di questa sede.');
-      addBlock('Curiosit\u00e0 sulla sede', c.fun_fact || 'Presto qui troverai un fun fact.');
     } else {
       spState.textContent = 'Sede ancora bloccata';
       addBlock('Come si sblocca', 'Vai in questa sede e inquadra il QR con la fotocamera del telefono.');

@@ -275,7 +275,7 @@
         S.belt.appendChild(n);
         S.items.push({ d: it, n: n, x: -n.offsetWidth });
       }
-      var speed = (calm ? 0.7 : 1) * 0.8 * (36 + S.el * 0.5);
+      var speed = (calm ? 0.7 : 1) * 0.9 * (36 + S.el * 0.5);
       S.items.slice().forEach(function (i) {
         i.x += speed * dt;
         i.n.style.transform = 'translateX(' + i.x + 'px)';
