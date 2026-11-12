@@ -105,7 +105,7 @@
     open: open
   };
 
-  function init() { if (!read()) open(); }
+  function init() { if (!read() && !document.body.hasAttribute('data-no-banner')) open(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

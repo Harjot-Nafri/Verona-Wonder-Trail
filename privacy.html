@@ -11,21 +11,23 @@
 <style>
 :root{--ocean:#7022FC;--acid:#FD8F32}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(75% 40% at 8% 4%,rgba(112,34,252,.55),transparent 70%),radial-gradient(70% 40% at 100% 100%,rgba(253,143,50,.35),transparent 70%),#010102;background-attachment:fixed;color:#fff;font-family:'Outfit',system-ui,sans-serif;line-height:1.55}
+body{margin:0;background:radial-gradient(75% 40% at 8% 4%,rgba(112,34,252,.55),transparent 70%),radial-gradient(70% 40% at 100% 100%,rgba(253,143,50,.35),transparent 70%),#010102;color:#fff;font-family:'Outfit',system-ui,sans-serif;line-height:1.55}
 main{max-width:680px;margin:0 auto;padding:28px 20px 64px}
 h1{font-family:'Unbounded',sans-serif;font-weight:700;font-size:26px;line-height:1.15;margin:18px 0 6px}
 h2{font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;margin:30px 0 8px;color:var(--acid)}
 p,li{font-size:15px;color:rgba(255,255,255,.92)}
 ul{padding-left:20px}
 a{color:#fff;text-underline-offset:3px}
-.back{display:inline-block;padding:10px 0;font-weight:600}
+.bar{position:sticky;top:0;z-index:10;padding:10px 20px;background:rgba(1,1,2,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.15)}
+.back{display:inline-flex;align-items:center;min-height:44px;font-weight:600;text-decoration:none}
+.bar .back{max-width:720px;margin:0 auto;display:flex}
 .upd{opacity:.7;font-size:13px}
 button.lnk{background:none;border:0;color:#fff;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
 </style>
 </head>
-<body>
+<body data-no-banner>
+<header class="bar"><a class="back" href="./">← Torna al sito</a></header>
 <main>
-<a class="back" href="./">← Torna al sito</a>
 <h1>Informativa sulla privacy</h1>
 <p class="upd">Aggiornata a novembre 2026</p>
 

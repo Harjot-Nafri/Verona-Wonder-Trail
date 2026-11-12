@@ -9,13 +9,15 @@
 <link rel="stylesheet" href="fonts.css">
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(75% 40% at 8% 4%,rgba(112,34,252,.55),transparent 70%),radial-gradient(70% 40% at 100% 100%,rgba(253,143,50,.35),transparent 70%),#010102;background-attachment:fixed;color:#fff;font-family:'Outfit',system-ui,sans-serif;line-height:1.55}
+body{margin:0;background:radial-gradient(75% 40% at 8% 4%,rgba(112,34,252,.55),transparent 70%),radial-gradient(70% 40% at 100% 100%,rgba(253,143,50,.35),transparent 70%),#010102;color:#fff;font-family:'Outfit',system-ui,sans-serif;line-height:1.55}
 main{max-width:720px;margin:0 auto;padding:28px 20px 64px}
 h1{font-family:'Unbounded',sans-serif;font-weight:700;font-size:26px;line-height:1.15;margin:18px 0 6px}
 h2{font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;margin:30px 0 10px;color:#FD8F32}
 p,li,td,th{font-size:14px;color:rgba(255,255,255,.92)}
 a{color:#fff;text-underline-offset:3px}
-.back{display:inline-block;padding:10px 0;font-weight:600}
+.bar{position:sticky;top:0;z-index:10;padding:10px 20px;background:rgba(1,1,2,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.15)}
+.back{display:inline-flex;align-items:center;min-height:44px;font-weight:600;text-decoration:none}
+.bar .back{max-width:720px;margin:0 auto;display:flex}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:520px}
 th,td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.18);vertical-align:top}
@@ -23,8 +25,8 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#FFB36B}
 </style>
 </head>
 <body>
+<header class="bar"><a class="back" href="./">← Torna al sito</a></header>
 <main>
-<a class="back" href="./">← Torna al sito</a>
 <h1>Crediti</h1>
 <p>Qui trovi gli autori e le licenze delle immagini, dei dati e dei programmi usati da Verona Wonder Trail.</p>
 
