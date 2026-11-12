@@ -80,7 +80,7 @@
   }
 
   function mount(view, onBack) {
-    var DURATION = 60;
+    var DURATION = 30;
     var GAP = 28;
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var raf = 0, running = false, S = null;
@@ -275,7 +275,7 @@
         S.belt.appendChild(n);
         S.items.push({ d: it, n: n, x: -n.offsetWidth });
       }
-      var speed = (calm ? 0.7 : 1) * (36 + S.el * 0.5);
+      var speed = (calm ? 0.7 : 1) * 0.8 * (36 + S.el * 0.5);
       S.items.slice().forEach(function (i) {
         i.x += speed * dt;
         i.n.style.transform = 'translateX(' + i.x + 'px)';

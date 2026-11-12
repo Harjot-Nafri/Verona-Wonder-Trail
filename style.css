@@ -951,3 +951,16 @@ body[data-view="gioca"],body[data-view="parole"],body[data-view="io"]{background
 .map-ask button{min-height:44px;padding:0 18px;border:0;border-radius:99px;background:linear-gradient(90deg,var(--ocean),var(--acid));color:#fff;font:700 14px 'Outfit',sans-serif;cursor:pointer}
 .legal{margin:0 auto;padding:0 20px 96px;max-width:520px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)}
 .legal a,.legal button{background:none;border:0;padding:8px 4px;color:rgba(255,255,255,.8);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* Album specie nel pannello della sede */
+.panel .alb{margin-top:14px;padding:0 0 14px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(253,143,50,.35);overflow:hidden}
+.panel .alb .pimg{margin:0;border-radius:0;max-height:none;aspect-ratio:16/10;object-position:center 30%}
+.alb-t{padding:12px 14px 0}
+.alb-t h4{margin:0;font-family:'Unbounded',sans-serif;font-weight:700;font-size:18px;color:#fff}
+.alb-t em{display:block;margin-top:2px;font-family:'Newsreader',serif;font-size:16px;color:var(--soft)}
+.alb-k{margin:12px 14px 0;padding:10px 12px;border-radius:12px;background:rgba(112,34,252,.28);border-left:3px solid var(--acid);font-size:14px;line-height:1.4}
+.alb-k b{display:block;margin-bottom:2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acid)}
+.alb-d{margin:12px 14px 0;font-size:14px;line-height:1.5;color:rgba(255,255,255,.92)}
+.alb-n{margin:10px 14px 0;font-size:12px;line-height:1.45;color:rgba(255,255,255,.72)}
+.alb-c{margin:6px 14px 0;font-size:11px;color:rgba(255,255,255,.6)}
+.alb-c a{color:inherit;text-underline-offset:2px}

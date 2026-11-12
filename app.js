@@ -378,16 +378,70 @@
     if (on) {
       spState.textContent = 'Sede sbloccata';
       var c = contenuti[id] || {};
-      if (s.immagine) {
-        var pimg = document.createElement('img');
-        pimg.className = 'pimg';
-        pimg.src = s.immagine;
-        pimg.alt = c.specie || '';
-        spBody.appendChild(pimg);
+      if (c.specie) {
+        var alb = document.createElement('div');
+        alb.className = 'alb';
+        if (s.immagine) {
+          var pimg = document.createElement('img');
+          pimg.className = 'pimg';
+          pimg.src = s.immagine;
+          pimg.alt = c.specie;
+          alb.appendChild(pimg);
+        }
+        var at = document.createElement('div');
+        at.className = 'alb-t';
+        var ah = document.createElement('h4');
+        ah.textContent = c.specie;
+        at.appendChild(ah);
+        if (c.specie_sci) {
+          var ai = document.createElement('em');
+          ai.textContent = c.specie_sci;
+          at.appendChild(ai);
+        }
+        alb.appendChild(at);
+        if (c.specie_sapevi) {
+          var ak = document.createElement('div');
+          ak.className = 'alb-k';
+          var al = document.createElement('b');
+          al.textContent = 'Lo sapevi?';
+          var ap = document.createElement('span');
+          ap.textContent = c.specie_sapevi;
+          ak.appendChild(al);
+          ak.appendChild(ap);
+          alb.appendChild(ak);
+        }
+        if (c.specie_desc) {
+          var ad = document.createElement('p');
+          ad.className = 'alb-d';
+          ad.textContent = c.specie_desc;
+          alb.appendChild(ad);
+        }
+        var an = document.createElement('p');
+        an.className = 'alb-n';
+        an.textContent = [c.specie_nota, 'Specie inclusa nell\u2019inventario del Parco naturale regionale della Lessinia. Associazione didattica proposta a un checkpoint urbano: non \u00e8 un avvistamento. La foto \u00e8 illustrativa, non prova di presenza locale.'].filter(Boolean).join(' ');
+        alb.appendChild(an);
+        if (c.specie_credito) {
+          var ac = document.createElement('p');
+          ac.className = 'alb-c';
+          var cm = /CC BY(-SA)? (\d\.\d)/.exec(c.specie_credito);
+          if (cm) {
+            ac.appendChild(document.createTextNode('Immagine: ' + c.specie_credito.slice(0, cm.index)));
+            var lic = document.createElement('a');
+            lic.href = 'https://creativecommons.org/licenses/' + (cm[1] ? 'by-sa' : 'by') + '/' + cm[2] + '/deed.it';
+            lic.target = '_blank';
+            lic.rel = 'noopener';
+            lic.textContent = cm[0];
+            ac.appendChild(lic);
+            ac.appendChild(document.createTextNode(c.specie_credito.slice(cm.index + cm[0].length) + ' \u00b7 ridimensionata'));
+          } else {
+            ac.textContent = 'Immagine: ' + c.specie_credito;
+          }
+          alb.appendChild(ac);
+        }
+        spBody.appendChild(alb);
       }
-      if (c.specie) addBlock('Nel tuo album', c.specie);
-      addBlock('Storia', c.storia || 'Presto qui troverai la storia di questa sede.');
-      addBlock('Lo sapevi?', c.fun_fact || 'Presto qui troverai un fun fact.');
+            addBlock('Storia', c.storia || 'Presto qui troverai la storia di questa sede.');
+      addBlock('Curiosit\u00e0 sulla sede', c.fun_fact || 'Presto qui troverai un fun fact.');
     } else {
       spState.textContent = 'Sede ancora bloccata';
       addBlock('Come si sblocca', 'Vai in questa sede e inquadra il QR con la fotocamera del telefono.');
@@ -410,7 +464,8 @@
     if (s.error) s = await sb.from('sedi').select('id,nome,ordine,lat,lng,categoria').order('ordine');
     if (s.error) s = await sb.from('sedi').select('id,nome,ordine,lat,lng').order('ordine');
     var b = await sb.from('sblocchi').select('sede_id');
-    var c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact,specie');
+    var c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact,specie,specie_sci,specie_sapevi,specie_desc,specie_nota,specie_credito');
+    if (c.error) c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact,specie');
     if (c.error) c = await sb.from('sedi_contenuti').select('sede_id,storia,fun_fact');
     if (s.error || !s.data) return;
     sedi = s.data;

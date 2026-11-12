@@ -162,7 +162,7 @@
 
   function gameCard() {
     var card = el('div', 'tile t-game');
-    card.appendChild(el('span', 'chip', '60 secondi · AMIA Verona'));
+    card.appendChild(el('span', 'chip', '30 secondi · AMIA Verona'));
     card.appendChild(el('h3', null, 'Dove lo butto?'));
     card.appendChild(el('p', null, 'Smista i rifiuti sul nastro: più risposte giuste di fila, più punti.'));
     var go = el('div', 'go');
