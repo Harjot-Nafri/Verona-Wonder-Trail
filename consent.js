@@ -105,7 +105,11 @@
     open: open
   };
 
-  function init() { if (!read() && !document.body.hasAttribute('data-no-banner')) open(); }
+  function init() {
+    var b = document.getElementById('open-consent');
+    if (b) b.addEventListener('click', open);
+    if (!read() && !document.body.hasAttribute('data-no-banner')) open();
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
