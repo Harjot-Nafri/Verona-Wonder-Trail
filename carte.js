@@ -20,7 +20,9 @@ window.WT_CARDS = (function () {
   function coverSrc(id) { return 'cover-' + id + '.jpg'; }
 
   // soglie di rarità: da regolare quando si conosce il numero di giocatori
-  function rarity(n) { return n < 3 ? 'Comune' : n < 8 ? 'Rara' : 'Leggendaria'; }
+  // Soglie in cuori: Rara da 10, Leggendaria da 18
+  var SOGLIA_RARA = 10, SOGLIA_LEG = 18;
+  function rarity(n) { return n < SOGLIA_RARA ? 'Comune' : n < SOGLIA_LEG ? 'Rara' : 'Leggendaria'; }
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);

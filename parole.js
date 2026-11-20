@@ -377,7 +377,7 @@
     var g = el('div', 'pg');
     var counts = [];
     notes.forEach(function (n, i) {
-      var b = el('button', 'pg-it' + (n.nascosta ? ' off' : '') + ((n.like || 0) >= 8 ? ' leg' : ''));
+      var b = el('button', 'pg-it' + (n.nascosta ? ' off' : '') + (window.WT_CARDS.rarity(n.like || 0) === 'Leggendaria' ? ' leg' : ''));
       b.type = 'button';
       b.setAttribute('aria-label', 'Apri la nota scritta a ' + n.sede_nome + ', ' + (n.like || 0) + ' cuori');
       if (n.copertina) {
@@ -388,7 +388,7 @@
         b.appendChild(im);
       }
       var c = el('span', 'pg-h', '♥ ' + (n.like || 0));
-      counts.push(function () { c.textContent = '♥ ' + (n.like || 0); b.classList.toggle('leg', (n.like || 0) >= 8); });
+      counts.push(function () { c.textContent = '♥ ' + (n.like || 0); b.classList.toggle('leg', window.WT_CARDS.rarity(n.like || 0) === 'Leggendaria'); });
       b.appendChild(c);
       if (n.id === flash.newId) b.classList.add('new');
       b.refresh = function () { counts.forEach(function (f) { f(); }); };
