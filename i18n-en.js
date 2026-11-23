@@ -1,6 +1,23 @@
 /* English dictionary for the site. Keys are the exact Italian texts; add new pairs here. */
 window.WT_EN = {
  m: {
+"Come funziona": "How it works",
+"Quattro passi, ": "Four steps, ",
+"una scoperta": "one discovery",
+"Scansiona il QR": "Scan the QR code",
+"Trova i QR nelle 14 sedi dell'università e sblocca la storia di ogni luogo.": "Find the QR codes in the 14 university locations and unlock the story of each place.",
+"Rispondi al quiz del giorno": "Answer the daily quiz",
+"Una domanda al giorno sui luoghi che hai scoperto. Più giorni di fila, più la tua serie cresce.": "One question a day about the places you've discovered. The more days in a row, the longer your streak.",
+"Mettiti alla prova con i minigiochi": "Challenge yourself with the minigames",
+"Smista i rifiuti sul nastro più veloce che puoi: ogni partita ti porta punti e missioni.": "Sort the waste on the belt as fast as you can: every game earns you points and missions.",
+"Lascia una parola": "Leave a word",
+"Scrivi una nota da una sede e ricevine una in cambio da un'altra. I cuori la rendono rara.": "Write a note from one location and get one back from another. Hearts make it rare.",
+"Questo nickname non è consentito. Scegline un altro.": "This nickname isn't allowed. Choose another one.",
+"Al momento non puoi scrivere nuove note.": "You can't write new notes right now.",
+"In revisione dal team": "Being reviewed by the team",
+"Non pubblicata": "Not published",
+"Nota inviata. Prima di pubblicarla il team la controlla; intanto ecco la nota che hai ricevuto in cambio.": "Note sent. The team will check it before it's published; meanwhile, here's the note you received in exchange.",
+"Nota inviata. Prima di pubblicarla il team la controlla: ritira la tua nota in cambio più tardi.": "Note sent. The team will check it before it's published: collect your note in exchange later.",
 "Il collegamento al server non è disponibile in questo momento.": "The connection to the server is not available right now.",
 "Questo QR non è valido. Riprova a inquadrarlo.": "This QR code is not valid. Try scanning it again.",
 "Puoi anche inquadrare il QR con la fotocamera del telefono.": "You can also scan the QR code with your phone's camera.",

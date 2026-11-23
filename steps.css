@@ -1,0 +1,39 @@
+/* "Come funziona": lista animata in homepage */
+.how{position:relative;max-width:480px;margin:0 auto;padding:8px 20px 56px}
+.how-h{margin:0 0 6px;font:800 11px/1 'Outfit',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
+.how-t{margin:0 0 26px;font:700 clamp(24px,7vw,30px)/1.1 'Unbounded',sans-serif;color:#fff}
+.how-t em{font:italic 400 1.15em 'Newsreader',serif;color:var(--soft)}
+.how-list{position:relative}
+.how-ol{list-style:none;margin:0;padding:0}
+.how-rail,.how-fill{position:absolute;left:27px;top:28px;bottom:28px;width:3px;border-radius:3px}
+.how-rail{background:rgba(255,255,255,.12)}
+.how-fill{background:linear-gradient(var(--lav),var(--acid));transform-origin:top;transform:scaleY(var(--p,0));box-shadow:0 0 14px rgba(253,143,50,.6)}
+.how-step{position:relative;display:grid;grid-template-columns:56px 1fr;gap:14px;margin:0 0 18px;opacity:0;transform:translateY(26px) scale(.97);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:calc(var(--k,0)*60ms)}
+.how-step.in{opacity:1;transform:none}
+.how-num{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#0b0620;border:2px solid rgba(255,255,255,.18);font:800 18px 'Unbounded',sans-serif;color:#fff;transition:border-color .5s,box-shadow .5s,background .5s}
+.how-step.in .how-num{border-color:var(--acid);box-shadow:0 0 0 6px rgba(253,143,50,.12),0 0 24px rgba(253,143,50,.45);background:linear-gradient(145deg,#2a0f6b,#0b0620)}
+.how-step.in .how-num::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--acid);animation:howPing 2.6s ease-out infinite;animation-delay:calc(var(--k,0)*400ms)}
+@keyframes howPing{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.7);opacity:0}}
+.how-card{position:relative;overflow:hidden;padding:16px 16px 16px 16px;border-radius:20px;background:linear-gradient(150deg,rgba(112,34,252,.34),rgba(255,255,255,.05));border:1px solid rgba(201,168,255,.28);backdrop-filter:blur(6px)}
+.how-card::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%);transform:translateX(-120%)}
+.how-step.in .how-card::before{animation:howShine 1.4s .35s var(--ease) 1 forwards}
+@keyframes howShine{to{transform:translateX(120%)}}
+.how-ico{width:44px;height:44px;margin:0 0 10px;color:var(--soft)}
+.how-ico *{vector-effect:non-scaling-stroke}
+.how-card h3{margin:0 0 6px;font:700 17px/1.2 'Unbounded',sans-serif;color:#fff}
+.how-card p{margin:0;font:400 14.5px/1.5 'Outfit',sans-serif;color:rgba(255,255,255,.82)}
+/* micro-animazioni delle icone */
+.ico-scan{animation:icoScan 2.2s ease-in-out infinite}
+@keyframes icoScan{0%,100%{transform:translateY(-14px);opacity:.2}50%{transform:translateY(14px);opacity:1}}
+.ico-flame{transform-origin:50% 90%;animation:icoFlame 1.6s ease-in-out infinite}
+@keyframes icoFlame{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.1,1.16) rotate(2deg)}}
+.ico-belt{animation:icoBelt 2.4s linear infinite}
+@keyframes icoBelt{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
+.ico-pol{transform-origin:50% 100%;animation:icoPol 3s ease-in-out infinite}
+@keyframes icoPol{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.how-go{display:block;margin:6px 0 0 70px;text-align:center}
+@media (prefers-reduced-motion:reduce){
+  .how-step{opacity:1;transform:none;transition:none}
+  .how-fill{transform:scaleY(1)}
+  .how-step .how-num::after,.how-card::before,.how-ico *{animation:none!important}
+}

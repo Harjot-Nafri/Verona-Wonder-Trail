@@ -488,7 +488,7 @@
       }
       var res = await sb.from('profili').insert({ user_id: session.user.id, nickname: nick });
       if (res.error) {
-        say('Non sono riuscito a salvare il nickname. Riprova.');
+        say(/nickname_non_consentito/.test(res.error.message || '') ? 'Questo nickname non è consentito. Scegline un altro.' : 'Non sono riuscito a salvare il nickname. Riprova.');
         return;
       }
       say('Benvenuto, @' + nick);

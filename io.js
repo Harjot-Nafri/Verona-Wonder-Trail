@@ -105,7 +105,10 @@
       var uid = s.data.session.user.id;
       var res = await client().from('profili').update({ nickname: v }).eq('user_id', uid);
       busy = false;
-      if (res.error) { errEl.textContent = 'Non sono riuscito a salvare il nickname. Riprova.'; btn.disabled = false; return; }
+      if (res.error) {
+        errEl.textContent = /nickname_non_consentito/.test(res.error.message || '') ? 'Questo nickname non è consentito. Scegline un altro.' : 'Non sono riuscito a salvare il nickname. Riprova.';
+        btn.disabled = false; return;
+      }
     } catch (e) {
       busy = false;
       errEl.textContent = 'Non sono riuscito a salvare il nickname. Riprova.';

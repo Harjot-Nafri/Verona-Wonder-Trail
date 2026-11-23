@@ -15,6 +15,7 @@
     gia_scritta: 'Hai già scritto una nota da questa sede.',
     troppo_corta: 'La nota è troppo corta: servono almeno ' + MIN + ' caratteri.',
     troppo_lunga: 'La nota è troppo lunga: massimo ' + MAX + ' caratteri.',
+    bloccato: 'Al momento non puoi scrivere nuove note.',
     non_autenticato: 'Sessione scaduta. Ricarica la pagina.'
   };
 
@@ -93,7 +94,9 @@
     }
     draft = { sede: '', testo: '', anonima: false, cover: '' };
     flash.newId = d.ricevuta ? d.ricevuta.id : null;
-    flash.msg = d.ricevuta
+    flash.msg = d.in_revisione
+      ? (d.ricevuta ? 'Nota inviata. Prima di pubblicarla il team la controlla; intanto ecco la nota che hai ricevuto in cambio.' : 'Nota inviata. Prima di pubblicarla il team la controlla: ritira la tua nota in cambio più tardi.')
+      : d.ricevuta
       ? 'Nota inviata. Ecco la nota che hai ricevuto in cambio.'
       : 'Nota inviata. Per ora non ci sono note di altri poli: la tua ti aspetta, ritirala più tardi.';
     await load();
@@ -421,7 +424,9 @@
       return card;
     }
     card.appendChild(gridOf(state.scritte, function (n) {
-      var st = n.nascosta ? 'Nascosta dalla moderazione'
+      var st = n.revisione === 'da_rivedere' ? 'In revisione dal team'
+        : n.revisione === 'rifiutata' ? 'Non pubblicata'
+        : n.nascosta ? 'Nascosta dalla moderazione'
         : n.scambiata ? '' : 'In attesa dello scambio';
       return { off: n.nascosta, byText: n.anonima ? 'Anonima' : 'Tu', extra: st ? el('p', 'pa-meta hc-state', st) : null };
     }));

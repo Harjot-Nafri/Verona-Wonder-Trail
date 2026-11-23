@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="consent.css">
+<link rel="stylesheet" href="steps.css">
 <script src="i18n-en.js"></script>
 <script src="i18n.js"></script>
 </head>
@@ -49,6 +50,20 @@
 </form>
 <p class="progress" id="progress"></p>
 
+</section>
+
+<section class="how" id="how" aria-labelledby="how-t">
+<p class="how-h">Come funziona</p>
+<h2 class="how-t" id="how-t">Quattro passi, <em>una scoperta</em></h2>
+<div class="how-list">
+<span class="how-rail" aria-hidden="true"></span><span class="how-fill" aria-hidden="true"></span>
+<ol class="how-ol">
+<li class="how-step" style="--k:0"><span class="how-num" aria-hidden="true">1</span><div class="how-card"><svg class="how-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V8a2 2 0 0 1 2-2h8M32 6h8a2 2 0 0 1 2 2v8M42 32v8a2 2 0 0 1-2 2h-8M16 42H8a2 2 0 0 1-2-2v-8"/><rect x="15" y="15" width="7" height="7" rx="1"/><rect x="26" y="15" width="7" height="7" rx="1"/><rect x="15" y="26" width="7" height="7" rx="1"/><path d="M27 28h6M30 28v6"/><g class="ico-scan"><path d="M8 24h32" stroke="#FD8F32"/></g></svg><h3>Scansiona il QR</h3><p>Trova i QR nelle 14 sedi dell'università e sblocca la storia di ogni luogo.</p></div></li>
+<li class="how-step" style="--k:1"><span class="how-num" aria-hidden="true">2</span><div class="how-card"><svg class="how-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="ico-flame"><path d="M24 5c1 7 9 10 9 20a9 9 0 0 1-18 0c0-4 2-6 4-8 0 4 2 5 3 5 0-6-1-11 2-17z"/></g><path d="M20 30a4 4 0 0 0 8 0" stroke="#FD8F32"/></svg><h3>Rispondi al quiz del giorno</h3><p>Una domanda al giorno sui luoghi che hai scoperto. Più giorni di fila, più la tua serie cresce.</p></div></li>
+<li class="how-step" style="--k:2"><span class="how-num" aria-hidden="true">3</span><div class="how-card"><svg class="how-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="30" width="38" height="8" rx="4"/><g class="ico-belt"><circle cx="16" cy="22" r="5" stroke="#FD8F32"/><rect x="28" y="16" width="9" height="10" rx="2"/></g></svg><h3>Mettiti alla prova con i minigiochi</h3><p>Smista i rifiuti sul nastro più veloce che puoi: ogni partita ti porta punti e missioni.</p></div></li>
+<li class="how-step" style="--k:3"><span class="how-num" aria-hidden="true">4</span><div class="how-card"><svg class="how-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="ico-pol"><rect x="10" y="7" width="28" height="34" rx="3"/><rect x="14" y="11" width="20" height="17" rx="1.5"/><path d="M16 34h12M16 38h7" stroke="#FD8F32"/></g></svg><h3>Lascia una parola</h3><p>Scrivi una nota da una sede e ricevine una in cambio da un'altra. I cuori la rendono rara.</p></div></li>
+</ol>
+</div>
 </section>
 
 </main>
@@ -118,5 +133,6 @@
 <script src="parole.js" defer></script>
 <script src="io.js" defer></script>
 <script src="aura.js"></script>
+<script src="steps.js" defer></script>
 </body>
 </html>
