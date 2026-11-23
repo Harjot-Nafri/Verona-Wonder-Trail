@@ -6,6 +6,21 @@
     auth: { storageKey: 'wt-admin-auth', persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
   });
   var tab = 'panoramica';
+  var IDLE_MS = 15 * 60 * 1000;   // disconnessione dopo 15 minuti di inattività
+  var QR_MS = 5 * 60 * 1000;      // il QR di attivazione vale 5 minuti
+  var LAST = 'wt-admin-last';
+  var idleTimer = null;
+  function touch() { try { localStorage.setItem(LAST, String(Date.now())); } catch (e) {} }
+  function lastTouch() { try { return Number(localStorage.getItem(LAST)) || 0; } catch (e) { return 0; } }
+  function startIdle() {
+    if (idleTimer) return;
+    var t = 0;
+    function act() { var n = Date.now(); if (n - t > 5000) { t = n; touch(); } }
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, act, { passive: true }); });
+    idleTimer = setInterval(async function () {
+      if (Date.now() - lastTouch() > IDLE_MS) { clearInterval(idleTimer); idleTimer = null; await sb.auth.signOut(); loginView('Sessione scaduta per inattività. Rientra.'); }
+    }, 15000);
+  }
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -47,13 +62,14 @@
       b.disabled = true; err.textContent = '';
       var r = await sb.auth.signInWithPassword({ email: e.input.value.trim(), password: p.input.value });
       if (r.error) { err.textContent = 'Email o password non corretti.'; b.disabled = false; return; }
+      touch();
       boot();
     });
     app.appendChild(box);
   }
   function logoutBtn() {
     var b = el('button', 'btn', 'Esci'); b.type = 'button';
-    b.addEventListener('click', async function () { await sb.auth.signOut(); loginView(); });
+    b.addEventListener('click', async function () { await sb.auth.signOut(); try { localStorage.removeItem(LAST); } catch (e) {} loginView(); });
     return b;
   }
   function deniedView() {
@@ -69,6 +85,8 @@
     var box = el('form', 'card login');
     box.appendChild(el('h1', null, 'Verifica a due passaggi'));
     var fl = await sb.auth.mfa.listFactors();
+    var vecchi = (fl.data && fl.data.all || []).filter(function (x) { return x.status !== 'verified'; });
+    for (var q = 0; q < vecchi.length; q++) { await sb.auth.mfa.unenroll({ factorId: vecchi[q].id }); }
     var f = fl.data && fl.data.totp && fl.data.totp.filter(function (x) { return x.status === 'verified'; })[0];
     var enroll = null;
     if (!f) {
@@ -80,6 +98,20 @@
       img.src = enroll.totp.qr_code; img.style.background = '#fff'; img.style.borderRadius = '12px'; img.style.padding = '8px';
       box.appendChild(img);
       box.appendChild(el('p', 'meta', 'Se non puoi scansionare, inserisci a mano: ' + enroll.totp.secret));
+      var cd = el('p', 'meta'); box.appendChild(cd);
+      var fine = Date.now() + QR_MS;
+      var iv = setInterval(async function () {
+        var r = fine - Date.now();
+        if (!document.body.contains(cd)) { clearInterval(iv); return; }
+        if (r <= 0) {
+          clearInterval(iv);
+          await sb.auth.mfa.unenroll({ factorId: enroll.id });
+          mfaView();
+          return;
+        }
+        var m = Math.floor(r / 60000), sec = Math.floor(r % 60000 / 1000);
+        cd.textContent = 'Questo codice scade tra ' + m + ':' + (sec < 10 ? '0' : '') + sec + ', poi ne verrà creato uno nuovo.';
+      }, 1000);
       f = enroll;
     } else {
       box.appendChild(el('p', null, 'Inserisci il codice a 6 cifre della tua app di autenticazione.'));
@@ -317,6 +349,8 @@
     var st;
     try { st = await rpc('admin_stato'); } catch (e) { return loginView('Errore di connessione.'); }
     if (!st.nel_team) { return deniedView(); }
+    if (Date.now() - lastTouch() > IDLE_MS) { await sb.auth.signOut(); return loginView('Sessione scaduta. Rientra.'); }
+    touch(); startIdle();
     if (!st.admin) return mfaView();
     show();
   }
