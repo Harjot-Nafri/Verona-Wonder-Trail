@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#010102">
-<title>Privacy · Verona Wonder Trail</title>
+<title data-en="Privacy · Verona Wonder Trail">Privacy · Verona Wonder Trail</title>
 <link rel="icon" href="logo/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="consent.css">
@@ -20,14 +20,16 @@ ul{padding-left:20px}
 a{color:#fff;text-underline-offset:3px}
 .bar{position:sticky;top:0;z-index:10;padding:10px 20px;background:rgba(1,1,2,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.15)}
 .back{display:inline-flex;align-items:center;min-height:44px;font-weight:600;text-decoration:none}
-.bar .back{max-width:720px;margin:0 auto;display:flex}
+.bar .back{display:flex}
 .upd{opacity:.7;font-size:13px}
 button.lnk{background:none;border:0;color:#fff;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
 </style>
+<script src="i18n.js"></script>
 </head>
 <body data-no-banner>
-<header class="bar"><a class="back" href="./">← Torna al sito</a></header>
+<header class="bar"><div style="max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px"><a class="back l-it" href="./">← Torna al sito</a><a class="back l-en" href="./">← Back to the site</a><span id="langsw-slot"></span></div></header>
 <main>
+<div class="l-it" lang="it">
 <h1>Informativa sulla privacy</h1>
 <p class="upd">Aggiornata a novembre 2026</p>
 
@@ -75,6 +77,56 @@ button.lnk{background:none;border:0;color:#fff;font:inherit;text-decoration:unde
 
 <h2>Minori</h2>
 <p>Il sito è pensato per studenti universitari. Se hai meno di 14 anni, non usarlo senza il consenso di un genitore.</p>
+</div>
+<div class="l-en" lang="en">
+<h1>Privacy policy</h1>
+<p class="upd">Updated November 2026</p>
+
+<h2>Who is the data controller</h2>
+<p>The data controller is <strong>[OWNER NAME]</strong>, in charge of the Verona Wonder Trail website (a student initiative for the University of Verona sites). For any request about your data: <strong>[CONTACT EMAIL]</strong>.</p>
+
+<h2>What we do not ask you for</h2>
+<p>There is no sign-up: we do not ask for your first name, surname, email or phone number. We do not show ads and we do not profile users.</p>
+
+<h2>What data we process</h2>
+<ul>
+<li><strong>Anonymous session identifier</strong>, created automatically on your first visit, to recognise your device and save your progress.</li>
+<li><strong>Nickname</strong> that you choose. Do not enter your real name.</li>
+<li><strong>Game progress</strong>: unlocked locations, quiz answers and points, results of the waste game, hearts given to notes.</li>
+<li><strong>Notes</strong> that you write: text, location, chosen cover and, if you do not choose «anonymous», your nickname. Notes can be read by other participants. Do not write personal data about yourself or other people.</li>
+<li><strong>Camera</strong>: it is only used to read the QR codes at the locations. The image is processed on your phone and is neither sent nor saved.</li>
+</ul>
+
+<h2>Why we process it and on what basis</h2>
+<ul>
+<li>To make the site and the game you chose to use work, save your progress and show notes: performance of the service you requested.</li>
+<li>To moderate reported notes and run the prize draw among participants: legitimate interest in keeping the site safe and organising the initiative.</li>
+<li>To show the OpenStreetMap background map: only with your consent (see below).</li>
+</ul>
+
+<h2>What we store on your phone</h2>
+<p>We use the browser's local storage (localStorage) for the anonymous session, your nickname and your preferences, including your consent choice. These are necessary technical tools that do not require consent. We do not use profiling cookies or analytics tools.</p>
+
+<h2>External services</h2>
+<ul>
+<li><strong>Vercel</strong>: hosts the site's pages. Like any web server, it may record technical connection data (for example the IP address) for as long as needed for operation and security.</li>
+<li><strong>Supabase</strong>: database and anonymous authentication, where progress and notes are stored.</li>
+<li><strong>OpenStreetMap</strong>: provides the map tiles. It is contacted <em>only if you turn on the map</em> in the banner; in that case its servers receive some technical connection data. It has its own privacy policy: <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" rel="noopener">osmfoundation.org</a>.</li>
+</ul>
+<p>The site's fonts and libraries are hosted directly by the site: they are not loaded from third-party services.</p>
+
+<h2>Your consent for the map</h2>
+<p>You can change your mind at any time: <button type="button" class="lnk" id="open-consent-en">manage your choice</button>. Without consent the locations stay visible on the map, without the cartographic background.</p>
+
+<h2>How long we keep the data</h2>
+<p>Progress and notes are kept for the duration of the initiative and, at the end, are deleted or made anonymous, except what is needed for the prize draw. Reported notes hidden by moderation may be deleted at any time.</p>
+
+<h2>Your rights</h2>
+<p>You can ask for access, rectification, erasure, restriction and objection to processing (Articles 15–22 of EU Regulation 2016/679), by writing to <strong>[CONTACT EMAIL]</strong>. If you want us to delete your data, include your nickname. You also have the right to lodge a complaint with the Italian Data Protection Authority (<a href="https://www.garanteprivacy.it" rel="noopener">garanteprivacy.it</a>).</p>
+
+<h2>Minors</h2>
+<p>The site is designed for university students. If you are under 14, do not use it without a parent's consent.</p>
+</div>
 </main>
 <p style="max-width:680px;margin:0 auto;padding:0 20px 40px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)">Developed by Harjot Nafri</p>
 <script src="consent.js"></script>

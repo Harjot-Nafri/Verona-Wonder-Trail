@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#010102">
-<title>Crediti · Verona Wonder Trail</title>
+<title data-en="Credits · Verona Wonder Trail">Crediti · Verona Wonder Trail</title>
 <link rel="icon" href="logo/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="fonts.css">
 <style>
@@ -17,16 +17,18 @@ p,li,td,th{font-size:14px;color:rgba(255,255,255,.92)}
 a{color:#fff;text-underline-offset:3px}
 .bar{position:sticky;top:0;z-index:10;padding:10px 20px;background:rgba(1,1,2,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.15)}
 .back{display:inline-flex;align-items:center;min-height:44px;font-weight:600;text-decoration:none}
-.bar .back{max-width:720px;margin:0 auto;display:flex}
+.bar .back{display:flex}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:520px}
 th,td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.18);vertical-align:top}
 th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#FFB36B}
 </style>
+<script src="i18n.js"></script>
 </head>
 <body>
-<header class="bar"><a class="back" href="./">← Torna al sito</a></header>
+<header class="bar"><div style="max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px"><a class="back l-it" href="./">← Torna al sito</a><a class="back l-en" href="./">← Back to the site</a><span id="langsw-slot"></span></div></header>
 <main>
+<div class="l-it" lang="it">
 <h1>Crediti</h1>
 <p>Qui trovi gli autori e le licenze delle immagini, dei dati e dei programmi usati da Verona Wonder Trail.</p>
 
@@ -53,6 +55,35 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#FFB36B}
 <li>supabase-js · licenza MIT</li>
 <li>Font Unbounded, Outfit e Newsreader · licenza SIL Open Font License 1.1</li>
 </ul>
+</div>
+<div class="l-en" lang="en">
+<h1>Credits</h1>
+<p>Here you will find the authors and licences of the images, data and software used by Verona Wonder Trail.</p>
+
+<h2>Images of the species album</h2>
+<p>The species come from the inventory of the Lessinia Regional Nature Park. The link to a location is educational: it is not a sighting and the photos do not prove local presence. The images are resized for the site.</p>
+<div class="tw"><table>
+<tr><th>Species</th><th>Location</th><th>Image</th></tr>
+<tr><td>Spring gentian</td><td>Civic Library</td><td>Böhringer Friedrich · <a href="https://creativecommons.org/licenses/by-sa/2.5/deed.it" target="_blank" rel="noopener">CC BY-SA 2.5</a> · resized</td></tr>
+<tr><td>Orange lily</td><td>Palazzo Barbieri</td><td>Robert Flogaus-Faust · <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a> · resized. Shows Lilium bulbiferum var. croceum.</td></tr>
+<tr><td>Alpine chamois</td><td>Ex Orsoline</td><td>Project illustration, AI-generated</td></tr><tr><td>Roe deer</td><td>Zanotto Campus</td><td>Project illustration, AI-generated</td></tr><tr><td>Red deer</td><td>Santa Marta</td><td>Project illustration, AI-generated</td></tr><tr><td>Alpine marmot</td><td>Cittadella</td><td>Project illustration, AI-generated</td></tr><tr><td>Red fox</td><td>Via Felice Casorati</td><td>Project illustration, AI-generated</td></tr><tr><td>Golden eagle</td><td>Cà Vignal</td><td>Project illustration, AI-generated</td></tr><tr><td>Wolf</td><td>Borgo Roma Polyclinic</td><td>Project illustration, AI-generated</td></tr><tr><td>Alpine cyclamen</td><td>Frinzi Library</td><td>Project illustration, AI-generated</td></tr><tr><td>Snowdrop</td><td>Meneghetti Library</td><td>Project illustration, AI-generated</td></tr><tr><td>Cowslip</td><td>San Francesco Canteen</td><td>Project illustration, AI-generated</td></tr><tr><td>Mountain crocus</td><td>Natural History Museum</td><td>Project illustration, AI-generated</td></tr><tr><td>Edelweiss</td><td>University of Verona</td><td>Project illustration, AI-generated</td></tr>
+</table></div>
+<p>Note: the wolf photo shows a captive animal in Norway, not in Lessinia. The edelweiss is a specimen grown in the Geneva Botanical Garden.</p>
+
+<h2>Note covers</h2>
+<p>The 10 images of Verona and its surroundings used as note covers are illustrations generated with artificial intelligence for the project. They are not real photographs and do not show people.</p>
+
+<h2>Map</h2>
+<p>Map background: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL licence), loaded only with your consent.</p>
+
+<h2>Software and fonts</h2>
+<ul>
+<li>Leaflet · BSD-2-Clause licence</li>
+<li>jsQR · Apache-2.0 licence</li>
+<li>supabase-js · MIT licence</li>
+<li>Fonts Unbounded, Outfit and Newsreader · SIL Open Font License 1.1</li>
+</ul>
+</div>
 </main>
 <p style="max-width:680px;margin:0 auto;padding:0 20px 40px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)">Developed by Harjot Nafri</p>
 </body>

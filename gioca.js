@@ -12,8 +12,9 @@
     benessere: 'Benessere in università',
     territorio: 'Verona e il suo territorio'
   };
-  var WD = ['D', 'L', 'M', 'M', 'G', 'V', 'S'];
-  var MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+  var EN = window.WT_LANG === 'en';
+  var WD = EN ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['D', 'L', 'M', 'M', 'G', 'V', 'S'];
+  var MESI = EN ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
 
   var state = { loaded: false, error: null, quiz: [], done: {} };
   var current = 'home';

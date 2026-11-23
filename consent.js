@@ -106,8 +106,10 @@
   };
 
   function init() {
-    var b = document.getElementById('open-consent');
-    if (b) b.addEventListener('click', open);
+    ['open-consent', 'open-consent-en'].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.addEventListener('click', open);
+    });
     if (!read() && !document.body.hasAttribute('data-no-banner')) open();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
