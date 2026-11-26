@@ -166,6 +166,21 @@ window.WT_PERCORSO = (function () {
     });
   }
 
+  function burstOk(from) {
+    var r = from.getBoundingClientRect(), e = ['✨', '⭐', '💜', '🧡', '✨'];
+    for (var i = 0; i < 8; i++) {
+      var h = el('i', 'pc-fly', e[i % e.length]);
+      h.setAttribute('aria-hidden', 'true');
+      h.style.left = (r.left + r.width / 2) + 'px';
+      h.style.top = (r.top + r.height / 2) + 'px';
+      h.style.setProperty('--x', ((Math.random() - .5) * 220) + 'px');
+      h.style.setProperty('--y', (-40 - Math.random() * 90) + 'px');
+      document.body.appendChild(h);
+      setTimeout((function (n) { return function () { n.remove(); }; })(h), 1100);
+    }
+    if (navigator.vibrate) { try { navigator.vibrate(20); } catch (e) { /* ok */ } }
+  }
+
   // ---- passo 3: mini quiz sulla specie ----
   function stepQuiz(o, ctx) {
     return new Promise(function (resolve) {
@@ -184,14 +199,18 @@ window.WT_PERCORSO = (function () {
       fb.setAttribute('aria-live', 'polite');
       opts.forEach(function (name) {
         var b = el('button', 'pc-opt', name);
+        b.setAttribute('data-n', name);
         b.type = 'button';
         b.addEventListener('click', function () {
           var all = box.querySelectorAll('button');
           for (var i = 0; i < all.length; i++) {
             all[i].disabled = true;
-            if (all[i].textContent === c.specie) all[i].classList.add('ok'); else all[i].classList.add('ko');
+            if (all[i].getAttribute('data-n') === c.specie) all[i].classList.add('ok'); else if (all[i] === b) all[i].classList.add('bad'); else all[i].classList.add('ko');
           }
-          fb.textContent = name === c.specie ? 'Esatto! È proprio ' + c.specie + '.' : 'Quasi: la specie di questa sede è ' + c.specie + '.';
+          var right = name === c.specie;
+          fb.className = 'pc-fb ' + (right ? 'good' : 'wrong');
+          fb.textContent = right ? 'Esatto! È proprio ' + c.specie + '.' : 'Quasi: la specie di questa sede è ' + c.specie + '.';
+          if (right) { burstOk(b); } else { b.classList.add('shake'); }
           row.querySelector('.pc-btn').hidden = false;
         });
         box.appendChild(b);
@@ -226,12 +245,14 @@ window.WT_PERCORSO = (function () {
         nx.hidden = true;
         bins.forEach(function (b) {
           var x = el('button', 'pc-opt', b.nome);
+          x.setAttribute('data-b', b.id);
           x.type = 'button';
           x.addEventListener('click', function () {
             var all = box.querySelectorAll('button');
-            for (var i = 0; i < all.length; i++) all[i].disabled = true;
+            for (var i = 0; i < all.length; i++) { all[i].disabled = true; if (all[i].getAttribute('data-b') === it[1]) all[i].classList.add('ok'); else if (all[i] !== x) all[i].classList.add('ko'); }
             var okk = b.id === it[1];
-            if (okk) { good++; x.classList.add('ok'); }
+            if (okk) { good++; burstOk(x); } else { x.classList.add('bad'); x.classList.add('shake'); }
+            fb.className = 'pc-fb ' + (okk ? 'good' : 'wrong');
             fb.textContent = (okk ? 'Giusto! ' : 'Non proprio. ') + it[2];
             nx.hidden = false;
           });

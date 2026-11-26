@@ -55,3 +55,16 @@
 .pc h2:focus{outline:none}
 .pc .hc,.pc .hc p{color:#010102}
 .pc .hc .hc-tag{color:#7022FC}
+/* giusto / sbagliato ben distinti */
+.pc-opt.ok{background:#12b76a;border-color:#6ce9a6;color:#04170e;animation:pcpulse .5s}
+.pc-opt.ok::before{content:"✓ ";font-weight:800}
+.pc-opt.bad{background:#d92d56;border-color:#ff8aa3;color:#fff;opacity:1}
+.pc-opt.bad::before{content:"✗ ";font-weight:800}
+.pc-opt.shake{animation:pcshake .45s}
+.pc-fb.good{color:#6ce9a6;font-weight:600}
+.pc-fb.wrong{color:#ff8aa3;font-weight:600}
+@keyframes pcpulse{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes pcshake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.pc-fly{position:fixed;z-index:2100;font-style:normal;font-size:22px;pointer-events:none;animation:pcfy 1s ease-out forwards}
+@keyframes pcfy{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--x),var(--y)) scale(1.3)}}
+@media (prefers-reduced-motion:reduce){.pc-opt.shake,.pc-opt.ok,.pc-fly{animation-duration:.01s}}

@@ -1,6 +1,20 @@
 /* English dictionary for the site. Keys are the exact Italian texts; add new pairs here. */
 window.WT_EN = {
  m: {
+  "Rupicapra rupicapra è un bovide dal corpo compatto e dalle corna sottili, ricurve all’apice.": "Rupicapra rupicapra is a bovid with a compact body and slender horns, curved at the tip.",
+  "Capreolus capreolus è un piccolo cervide con grandi orecchie e una macchia chiara sul posteriore.": "Capreolus capreolus is a small deer with large ears and a pale patch on its rump.",
+  "Cervus elaphus è un grande cervide dal mantello bruno, più rossiccio in estate.": "Cervus elaphus is a large deer with a brown coat, redder in summer.",
+  "Marmota marmota è un roditore robusto con orecchie piccole e coda relativamente corta.": "Marmota marmota is a sturdy rodent with small ears and a relatively short tail.",
+  "Vulpes vulpes è un canide dal muso affusolato e dalle orecchie triangolari.": "Vulpes vulpes is a canid with a slender muzzle and triangular ears.",
+  "Aquila chrysaetos è un grande rapace dal piumaggio bruno e dalla nuca dorata.": "Aquila chrysaetos is a large bird of prey with brown plumage and a golden nape.",
+  "Canis lupus è un grande canide con zampe lunghe, testa robusta e orecchie triangolari.": "Canis lupus is a large canid with long legs, a sturdy head and triangular ears.",
+  "Cyclamen purpurascens è una pianta perenne tuberosa con foglie cuoriformi, spesso screziate d’argento.": "Cyclamen purpurascens is a tuberous perennial with heart-shaped leaves, often mottled with silver.",
+  "Galanthus nivalis è una pianta bulbosa con due foglie strette e un fiore bianco pendulo.": "Galanthus nivalis is a bulbous plant with two narrow leaves and a drooping white flower.",
+  "Primula veris è una perenne con foglie rugose riunite in rosetta basale.": "Primula veris is a perennial with wrinkled leaves gathered in a basal rosette.",
+  "Gentiana verna è una piccola perenne con foglie basali riunite in rosetta.": "Gentiana verna is a small perennial with basal leaves gathered in a rosette.",
+  "Crocus albiflorus è una geofita delle Iridacee con foglie strette percorse da una linea chiara.": "Crocus albiflorus is a geophyte of the iris family with narrow leaves marked by a pale line.",
+  "Lilium bulbiferum è una perenne bulbosa con fusto eretto e foglie lanceolate.": "Lilium bulbiferum is a bulbous perennial with an upright stem and lanceolate leaves.",
+  "Leontopodium alpinum è una perenne rivestita di una fitta peluria biancastra.": "Leontopodium alpinum is a perennial covered in dense whitish down.",
   "Lascia una nota ad altri poli": "Leave a note for other sites",
   "Scrivi qualcosa per chi verrà dopo di te. In cambio ne riceverai una scritta da un altro polo.": "Write something for those who come after you. In return you'll receive one written at another site.",
   "Che cosa ti ha colpito di questo posto?": "What struck you about this place?",
@@ -846,11 +860,11 @@ window.WT_EN.p = [
     var w = { ottenuta: 'earned', sbloccata: 'unlocked', 'da sbloccare': 'to unlock', completata: 'completed', 'da fare': 'to do' };
     return t(m[1]) + ': ' + w[m[2]];
   }],
-  [/^Esatto! È proprio (.+)\.$/, function (m) { return 'Correct! It is ' + m[1] + '.'; }],
-  [/^Quasi: la specie di questa sede è (.+)\.$/, function (m) { return 'Close: the species of this site is ' + m[1] + '.'; }],
+  [/^Esatto! È proprio (.+)\.$/, function (m, t) { return 'Correct! It is ' + (t(m[1]) || m[1]) + '.'; }],
+  [/^Quasi: la specie di questa sede è (.+)\.$/, function (m, t) { return 'Close: the species of this site is ' + (t(m[1]) || m[1]) + '.'; }],
   [/^Mini sfida · (\d)\/3$/, function (m) { return 'Mini challenge · ' + m[1] + '/3'; }],
-  [/^Lascia una nota finale come se (.+) potesse sentirti$/, function (m) { return 'Leave a final note as if ' + m[1] + ' could hear you'; }],
-  [/^La tua nota finale a (.+) è stata inviata\.$/, function (m) { return 'Your final note to ' + m[1] + ' has been sent.'; }],
+  [/^Lascia una nota finale come se (.+) potesse sentirti$/, function (m, t) { return 'Leave a final note as if ' + (t(m[1]) || m[1]) + ' could hear you'; }],
+  [/^La tua nota finale a (.+) è stata inviata\.$/, function (m, t) { return 'Your final note to ' + (t(m[1]) || m[1]) + ' has been sent.'; }],
   [/^Giusto! (.+)$/, function (m, t) { return 'Correct! ' + (t(m[1]) || m[1]); }],
   [/^Non proprio\. (.+)$/, function (m, t) { return 'Not quite. ' + (t(m[1]) || m[1]); }],
   [/^(.+?): (.+)$/, function (m, t, tr) {
