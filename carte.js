@@ -107,7 +107,14 @@ window.WT_CARDS = (function () {
     }
 
     li.appendChild(el('p', 'hc-tag', 'Scritta a ' + n.sede_nome));
-    li.appendChild(el('p', 'hc-text', '«' + n.testo + '»'));
+    var txt = el('p', 'hc-text', '«' + n.testo + '»');
+    txt.setAttribute('data-no-i18n', '');
+    li.appendChild(txt);
+    if (opts.toggle && window.WT_TR) {
+      var trHost = el('div', 'hc-trw');
+      li.appendChild(trHost);
+      window.WT_TR.attach(n, txt, trHost);
+    }
 
     var foot = el('div', 'hc-foot');
     foot.appendChild(el('span', 'hc-by', opts.byText != null ? opts.byText : (n.autore ? '@' + n.autore : 'Anonimo')));
@@ -136,6 +143,24 @@ window.WT_CARDS = (function () {
         });
       });
       foot.appendChild(heart);
+      if (opts.save) {
+        var sv = el('button', 'hc-save');
+        sv.type = 'button';
+        sv.setAttribute('aria-pressed', n.salvata ? 'true' : 'false');
+        sv.setAttribute('aria-label', n.salvata ? 'Rimuovi dalle salvate' : 'Salva la nota');
+        sv.textContent = n.salvata ? '🔖' : '🏷️';
+        sv.addEventListener('click', function () {
+          var want = sv.getAttribute('aria-pressed') !== 'true';
+          Promise.resolve(opts.save(n, want)).then(function (ok) {
+            if (!ok) return;
+            n.salvata = want;
+            sv.setAttribute('aria-pressed', want ? 'true' : 'false');
+            sv.setAttribute('aria-label', want ? 'Rimuovi dalle salvate' : 'Salva la nota');
+            sv.textContent = want ? '🔖' : '🏷️';
+          });
+        });
+        foot.appendChild(sv);
+      }
     } else {
       var c = el('span', 'hc-count');
       c.setAttribute('aria-label', (n.like || 0) + ((n.like || 0) === 1 ? ' cuore' : ' cuori'));

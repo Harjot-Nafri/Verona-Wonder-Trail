@@ -66,6 +66,8 @@
       var r = await c.from('risposte').select('giorno,corretta');
       var n = await c.rpc('mie_note');
       var mm = await c.rpc('stato_missioni');
+      var al = await c.rpc('stato_album');
+      state.album = al && !al.error ? al.data : null;
       if (a.error || b.error) { state.error = 'err'; state.loaded = true; return; }
       state.nick = (p && p.data && p.data.nickname) || '';
       state.sedi = a.data || [];
@@ -132,6 +134,31 @@
   }
 
   // ---- interfaccia ----
+  function codeCard() {
+    var a = state.album;
+    if (!a || !a.codice) return null;
+    var card = el('div', 'gcard');
+    card.appendChild(el('h3', null, 'Codice Esploratore'));
+    var c = el('p', 'io-code', a.codice);
+    c.setAttribute('data-no-i18n', '');
+    c.style.cssText = 'font:800 24px Unbounded,sans-serif;letter-spacing:.04em;margin:6px 0';
+    card.appendChild(c);
+    card.appendChild(el('p', null, 'Mostralo al team per ritirare l\'eventuale premio.'));
+    if (a.completo && !a.finale) {
+      var b = el('button', 'gbtn', 'Lascia la nota finale');
+      b.type = 'button';
+      b.addEventListener('click', function () {
+        var d = window.WT.getSedi && window.WT.getSedi();
+        if (d && window.WT_PERCORSO) window.WT_PERCORSO.finale({ sedi: d.sedi, contenuti: d.contenuti }).then(refresh);
+      });
+      card.appendChild(b);
+    } else if (a.finale) {
+      var q = el('p', null, 'La tua nota finale a ' + (a.finale.specie || a.finale.sede_nome) + ' è stata inviata.');
+      card.appendChild(q);
+    }
+    return card;
+  }
+
   function meCard() {
     var li = levelInfo();
     var card = el('div', 'me');
@@ -395,6 +422,8 @@
     }
     var stack = el('div', 'stack');
     stack.appendChild(meCard());
+    var cc = codeCard();
+    if (cc) stack.appendChild(cc);
     if (state.m) {
       stack.appendChild(levelCard());
       stack.appendChild(questsCard());

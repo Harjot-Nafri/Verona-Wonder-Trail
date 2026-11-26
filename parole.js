@@ -280,6 +280,13 @@
     return card;
   }
 
+  async function saveNote(n, want) {
+    try {
+      var r = await client().rpc('salva_nota', { p_nota: n.id, p_si: want });
+      return !!(r.data && r.data.ok);
+    } catch (e) { return false; }
+  }
+
   function receivedOpts(n) {
     var slot = el('div', 'pa-confirm');
     var rep = el('button', 'pa-link', 'Segnala');
@@ -298,7 +305,7 @@
       yes.focus();
     });
     slot.appendChild(rep);
-    return { isNew: n.id === flash.newId, toggle: toggleHeart, extra: slot };
+    return { isNew: n.id === flash.newId, toggle: toggleHeart, save: saveNote, extra: slot };
   }
 
   // ---- griglia di miniature + polaroid a schermo intero ----

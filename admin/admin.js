@@ -133,7 +133,7 @@
   }
 
   // ---------- pannello ----------
-  var TABS = [['panoramica', 'Panoramica'], ['note', 'Note da rivedere'], ['utenti', 'Utenti'], ['regole', 'Regole filtro'], ['registro', 'Registro']];
+  var TABS = [['panoramica', 'Panoramica'], ['note', 'Note da rivedere'], ['utenti', 'Utenti'], ['finali', 'Note finali'], ['regole', 'Regole filtro'], ['registro', 'Registro']];
   function shell(stato) {
     clear();
     var w = el('div', 'wrap');
@@ -162,6 +162,7 @@
       if (tab === 'panoramica') await vPan(out);
       else if (tab === 'note') await vNote(out);
       else if (tab === 'utenti') await vUtenti(out);
+      else if (tab === 'finali') await vFinali(out);
       else if (tab === 'regole') await vRegole(out);
       else await vReg(out);
       body.textContent = ''; body.appendChild(out);
@@ -252,19 +253,30 @@
   }
 
   async function vUtenti(out) {
-    var q = field('Cerca per nickname', 'search', 'q', { maxlength: '20' });
+    var q = field('Cerca per nickname o codice', 'search', 'q', { maxlength: '20' });
     var holder = el('div', 'card scroll');
     async function load() {
       holder.textContent = '';
       var list = await rpc('admin_utenti', { p_cerca: q.input.value.trim(), p_limite: 100 });
       var t = el('table'); var hr = el('tr');
-      ['Nickname', 'Iscritto', 'Sedi', 'Note', 'Quiz', 'Partite', 'Ultima attività', ''].forEach(function (h) { hr.appendChild(el('th', null, h)); });
+      ['Nickname', 'Codice', 'Iscritto', 'Sedi', 'Note', 'Quiz', 'Partite', 'Ultima attività', 'Premio', ''].forEach(function (h) { hr.appendChild(el('th', null, h)); });
       t.appendChild(hr);
       list.forEach(function (u) {
         var r = el('tr');
         r.appendChild(el('td', null, '@' + u.nickname + (u.bloccato ? ' 🚫' : '')));
+        r.appendChild(el('td', null, u.codice || '—'));
         [fmt(u.creato_il), u.sedi, u.note + (u.note_nascoste ? ' (' + u.note_nascoste + ' nasc.)' : ''), u.risposte, u.partite, fmt(u.ultima_attivita)]
           .forEach(function (x) { r.appendChild(el('td', null, String(x))); });
+        var tp = el('td');
+        var pb = el('button', 'btn ' + (u.premio_ritirato ? '' : 'ok'), u.premio_ritirato ? 'Ritirato ✓ (annulla)' : 'Segna ritirato'); pb.type = 'button';
+        if (u.sedi < 14 && !u.premio_ritirato) tp.appendChild(el('span', 'meta', 'Album incompleto ' + u.sedi + '/14 '));
+        pb.addEventListener('click', async function () {
+          pb.disabled = true;
+          try { await rpc('admin_premio', { p_user: u.user_id, p_ritirato: !u.premio_ritirato }); await load(); } catch (e) { pb.disabled = false; }
+        });
+        tp.appendChild(pb);
+        if (u.nota_finale) tp.appendChild(el('span', 'chip', 'Nota finale'));
+        r.appendChild(tp);
         var td = el('td'); var b = el('button', 'btn ' + (u.bloccato ? '' : 'no'), u.bloccato ? 'Sblocca' : 'Blocca'); b.type = 'button';
         b.addEventListener('click', async function () {
           b.disabled = true;
@@ -277,6 +289,32 @@
     }
     var tm; q.input.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(function () { load().catch(function () {}); }, 350); });
     out.appendChild(q.wrap); out.appendChild(el('p', 'meta', 'Gli utenti sono anonimi: vedi solo il nickname, nessun dato personale. "Blocca" impedisce di scrivere nuove note.'));
+    out.appendChild(holder);
+    await load();
+  }
+
+  async function vFinali(out) {
+    var holder = el('div');
+    async function load() {
+      holder.textContent = '';
+      var list = await rpc('admin_note_finali', { p_limite: 100 });
+      if (!list.length) holder.appendChild(el('div', 'card', 'Nessuna nota finale per ora.'));
+      list.forEach(function (n) {
+        var c = el('div', 'card');
+        c.appendChild(el('p', 'meta', 'Per: ' + n.specie + ' · ' + fmt(n.creata_il) + ' · @' + n.autore + ' · ' + (n.codice || '—')));
+        c.appendChild(el('p', 'note-t', n.testo));
+        (n.motivi || []).forEach(function (x) { c.appendChild(el('span', 'chip red', MOT[x] || x)); });
+        c.appendChild(el('span', 'chip', 'Stato: ' + n.revisione));
+        var a = el('div', 'actions');
+        [['Approva', 'ok', 'approva'], ['Nascondi', 'no', 'nascondi']].forEach(function (x) {
+          var b = el('button', 'btn ' + x[1], x[0]); b.type = 'button';
+          b.addEventListener('click', async function () { b.disabled = true; try { await rpc('admin_modera_finale', { p_user: n.user_id, p_azione: x[2] }); await load(); } catch (e) { b.disabled = false; } });
+          a.appendChild(b);
+        });
+        c.appendChild(a);
+        holder.appendChild(c);
+      });
+    }
     out.appendChild(holder);
     await load();
   }

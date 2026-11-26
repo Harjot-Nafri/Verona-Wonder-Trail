@@ -30,7 +30,7 @@
 
   var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
   var session = null;
-  window.WT = { sb: sb, ready: false };
+  window.WT = { sb: sb, ready: false, getSedi: function () { return { sedi: sedi, contenuti: contenuti }; } };
 
   // stato della mappa
   var map = null;
@@ -51,9 +51,11 @@
   }
 
   var lastNew = null;
+  var lastNewId = null;
 
   async function unlockWith(sede, key) {
     lastNew = null;
+    lastNewId = null;
     var pre = null;
     try { pre = await sb.from('sblocchi').select('sede_id').eq('sede_id', sede); } catch (e) { pre = null; }
     var wasNew = !!(pre && !pre.error && pre.data && pre.data.length === 0);
@@ -65,17 +67,24 @@
     var info = await sb.from('sedi').select('nome').eq('id', sede).maybeSingle();
     var nome = info.data && info.data.nome ? info.data.nome : 'nuova sede';
     say('Sede sbloccata: ' + nome);
-    if (wasNew) lastNew = nome;
+    if (wasNew) { lastNew = nome; lastNewId = sede; }
     return sede;
   }
 
   async function celebrate() {
-    if (!lastNew || !window.WT_UNLOCK) return;
-    var nome = lastNew;
+    if (!lastNew) return;
+    var nome = lastNew, id = lastNewId;
     lastNew = null;
+    lastNewId = null;
+    var n = Object.keys(unlocked).length;
     try {
-      await window.WT_UNLOCK({ nome: nome, n: Object.keys(unlocked).length, total: sedi.length, punti: 20 });
-    } catch (e) { /* l'animazione non deve bloccare lo sblocco */ }
+      if (window.WT_PERCORSO && id) {
+        await window.WT_PERCORSO.run({ sede: id, nome: nome, n: n, total: sedi.length, contenuti: contenuti });
+        if (n >= sedi.length && sedi.length) await window.WT_PERCORSO.finale({ sedi: sedi, contenuti: contenuti });
+      } else if (window.WT_UNLOCK) {
+        await window.WT_UNLOCK({ nome: nome, n: n, total: sedi.length, punti: 20 });
+      }
+    } catch (e) { /* il percorso non deve bloccare lo sblocco */ }
   }
 
   async function unlockFromUrl() {

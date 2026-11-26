@@ -336,5 +336,5 @@
     intro();
   }
 
-  window.WT_RIFIUTI = { mount: mount, count: ITEMS.length };
+  window.WT_RIFIUTI = { mount: mount, count: ITEMS.length, items: ITEMS, bins: BINS };
 })();
