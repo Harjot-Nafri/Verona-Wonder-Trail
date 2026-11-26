@@ -73,6 +73,42 @@ window.WT_PERCORSO = (function () {
     return new Promise(function (r) { setTimeout(function () { w.remove(); r(); }, 1500); });
   }
 
+  // ---- ingresso: portone con il logo che si apre ----
+  function intro(o, ctx) {
+    return new Promise(function (resolve) {
+      var w = el('div', 'pc-ig');
+      w.setAttribute('aria-live', 'polite');
+      var glow = el('div', 'pc-glow');
+      glow.setAttribute('aria-hidden', 'true');
+      var cap = el('p', 'pc-igcap', 'Sede trovata');
+      var nm = el('h2', 'pc-ignm', ctx.nome);
+      w.appendChild(glow); w.appendChild(cap); w.appendChild(nm);
+      var brand = document.querySelector('.brand');
+      ['l', 'r'].forEach(function (side) {
+        var d = el('div', 'pc-door ' + side);
+        d.setAttribute('aria-hidden', 'true');
+        var inner = el('div', 'pc-dw');
+        if (brand) {
+          var c = brand.cloneNode(true);
+          c.classList.add('pc-logo');
+          inner.appendChild(c);
+        }
+        d.appendChild(inner);
+        w.appendChild(d);
+      });
+      o.appendChild(w);
+      var done = false;
+      function end() {
+        if (done) return;
+        done = true;
+        w.classList.add('out');
+        setTimeout(function () { w.remove(); resolve(); }, 350);
+      }
+      w.addEventListener('click', end);
+      setTimeout(end, 3000);
+    });
+  }
+
   // ---- passo 1: scrivi ----
   function stepWrite(o, ctx) {
     return new Promise(function (resolve) {
@@ -135,16 +171,19 @@ window.WT_PERCORSO = (function () {
         inn.appendChild(r0);
         return;
       }
-      var env = el('div', 'pc-env');
-      env.setAttribute('aria-hidden', 'true');
-      env.appendChild(el('b')); env.appendChild(el('u')); env.appendChild(el('i'));
-      inn.appendChild(env);
+      var sky = el('div', 'pc-sky');
+      sky.setAttribute('aria-hidden', 'true');
+      ['a', 'b', 'c', 'd'].forEach(function (k) { sky.appendChild(el('i', 'pc-tw ' + k)); });
+      sky.appendChild(el('i', 'pc-star'));
+      sky.appendChild(el('i', 'pc-flash'));
+      o.appendChild(sky);
+      var env = sky;
       var slot = el('div');
       inn.appendChild(slot);
       var row = el('div', 'pc-row');
       inn.appendChild(row);
       setTimeout(function () {
-        env.classList.add('gone');
+        setTimeout(function () { sky.remove(); }, 900);
         var ul = el('ul', 'pa-list hc-list pc-card');
         ul.style.listStyle = 'none';
         ul.style.padding = '0';
@@ -162,7 +201,7 @@ window.WT_PERCORSO = (function () {
         slot.appendChild(ul);
         row.appendChild(btn('Avanti', 'o', next));
         row.appendChild(skip('Salta', next));
-      }, 2000);
+      }, 1250);
     });
   }
 
@@ -273,6 +312,7 @@ window.WT_PERCORSO = (function () {
   async function run(ctx) {
     var o = overlay();
     try {
+      await intro(o, ctx);
       var d = await stepWrite(o, ctx);
       if (d) await stepReceive(o, ctx, d);
       await stepQuiz(o, ctx);
